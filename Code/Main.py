@@ -26,7 +26,7 @@ Objet_Concentration.Algorithme_Resolution()
 # Plot
 Objet_Graphique = Plot_Concentration( Objet_Concentration.C, N)
 Objet_Graphique.Plot_Numerique()
-#Objet_Graphique.Plot_Exact()
+Objet_Graphique.Plot_Exact()
 
 
     

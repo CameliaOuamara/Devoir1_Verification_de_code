@@ -60,7 +60,7 @@ class Profil_Concentration:
         for i in range(1,self.N-1):
             self.A[i, i-1]  = self.a
             
-            self.A[i, i]   = -2*self.a - self.b/self.r[i] + self.e
+            self.A[i, i]   = -2*self.a - self.b/self.r[i] - self.e
 
             self.A[i, i+1] = self.a + self.b/self.r[i]
             
@@ -83,7 +83,7 @@ class Profil_Concentration:
         self.B[-1] = self.Ce
         
         for i in range(1,self.N-1):
-            self.B[i] = self.S + self.e * C_t[i]
+            self.B[i] = self.S - self.e * C_t[i]
             
     def Algorithme_Resolution(self):
         
