@@ -19,6 +19,8 @@ class Plot_Concentration():
         
         self.r = np.linspace(0, self.R, self.N)
         
+        self.C_exact = (0.25*self.S*self.R**2*(self.r**2/self.R**2-1)/self.Deff + self.Ce)
+        
     def Plot_Numerique(self):
         
         for i in range(len(self.C)):
@@ -27,9 +29,7 @@ class Plot_Concentration():
         
         
     def Plot_Exact(self):
-        C_exact = (0.25*self.S*self.R**2*(self.r**2/self.R**2-1)/self.Deff + self.Ce)
-    
-        plt.plot(self.r, C_exact, label='Solution exacte')
+        plt.plot(self.r, self.C_exact, label='Solution exacte')
         #plt.legend()
         plt.grid()
         plt.show()

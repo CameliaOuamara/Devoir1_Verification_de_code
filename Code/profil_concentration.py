@@ -4,11 +4,13 @@ Fonction de resolution d'un probleme stationnaire
 
 # Libraries
 import numpy as np
-import sympy as sp
+# import sympy as sp
+import scipy.sparse as sp
+
 
 class Profil_Concentration:
 
-    def __init__(self, delta_r, delta_t, t_final, N, R):
+    def __init__(self, delta_r, delta_t, N, R, critere_conv):
         """
         Parameters
         ----------
@@ -29,7 +31,7 @@ class Profil_Concentration:
         # Entrees :
         self.Delta_r = delta_r
         self.Delta_t = delta_t
-        self.t_final = t_final
+        self.critere_conv = critere_conv
         self.N = N
         self.R = R
         
@@ -51,8 +53,9 @@ class Profil_Concentration:
         Membre de gauche. Matrice A des coefficients
 
         """
-        self.A = np.zeros((self.N,self.N))
-        
+        self.A = sp.lil_matrix((self.N,self.N))
+        self.A_inverse = np.zeros((self.N,self.N))
+
         self.A[0,0]   = -1
         self.A[0,1]   =  1
         self.A[-1,-1] =  1
@@ -63,6 +66,10 @@ class Profil_Concentration:
             self.A[i, i]   = -2*self.a - self.b/self.r[i] - self.e
 
             self.A[i, i+1] = self.a + self.b/self.r[i]
+            
+        #storer l'inverse puisqu'elle ne change pas
+        self.A = self.A.tocsr()
+        self.A_inverse = sp.linalg.inv(self.A)
             
         
     def Matrice_B(self, C_t):
@@ -77,13 +84,15 @@ class Profil_Concentration:
         Membre de droite. Matrice des resultats B.
         """
         
-        self.B = np.zeros(self.N)
+        self.B = sp.lil_matrix((self.N, 1))
         
-        self.B[0]  = 0
-        self.B[-1] = self.Ce
+        self.B[0,0]  = 0.0
+        self.B[-1,0] = self.Ce
         
         for i in range(1,self.N-1):
-            self.B[i] = self.S - self.e * C_t[i]
+            self.B[i,0] = self.S - self.e * C_t[i]
+            
+        self.B = self.B.tocsc()
             
     def Algorithme_Resolution(self):
         
@@ -91,34 +100,53 @@ class Profil_Concentration:
         self.Matrice_A()
         
         # Initialisation du temps
-        t = 0 + self.Delta_t
+        self.t = 0 + self.Delta_t
         i = 0
-        
-        # Nombre de points dans le temps
-        N_t = self.t_final / self.Delta_t + 1
     
         # Concentration au temps t0
-        C_t = np.zeros(self.N)
+        C_t = np.zeros((1, self.N))
+        C_t_plus_1 = np.zeros((1, self.N))
         
         # Initailisation matrice concentration a chaque temps
-        self.C = np.zeros((int(N_t), self.N))
-        self.C[0,:] = C_t
+        self.C = np.zeros((1, self.N))
+        # self.C[0,:] = C_t
 
-        while t <= self.t_final:
+        # while t <= self.t_final:
+        #     # Construction matrice B
+        #     self.Matrice_B(self.C[i])
+            
+        #     # Resolution du systeme matriciel
+        #     C_t_plus_1 = np.linalg.solve(self.A, self.B)
+            
+        #     # Remplissage de la matrice de concentration
+        #     self.C[i+1, :] = C_t_plus_1
+            
+        #     # Avancer au temps suivant
+        #     t += self.Delta_t
+        #     i+= 1
+            
+        #initialisation de diff_temporelle pour s'assurer qu'on soit steady à la dernière itération
+        diff_temporelle = 1.0e10
+        
+        while diff_temporelle>=self.critere_conv:
             # Construction matrice B
             self.Matrice_B(self.C[i])
             
             # Resolution du systeme matriciel
-            C_t_plus_1 = np.linalg.solve(self.A, self.B)
-            
+            # C_t_plus_1[0,:] = sp.linalg.spsolve(self.A, self.B)
+            C_t_plus_1 = self.A_inverse.dot(self.B).toarray()
+
             # Remplissage de la matrice de concentration
-            self.C[i+1, :] = C_t_plus_1
+            self.C = np.append(self.C, C_t_plus_1.T, axis=0)
             
             # Avancer au temps suivant
-            t += self.Delta_t
+            self.t += self.Delta_t
             i+= 1
+            print("i: ", i)
             
-            
+            # calcul de la différence temporelle
+            diff_temporelle = np.linalg.norm(self.C[i, :] - self.C[i-1, :])/np.linalg.norm(self.C[i, :])
+                        
             
         
             
