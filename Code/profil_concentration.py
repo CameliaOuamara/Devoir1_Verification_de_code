@@ -146,6 +146,34 @@ class Profil_Concentration:
             
             # calcul de la différence temporelle
             diff_temporelle = np.linalg.norm(self.C[i, :] - self.C[i-1, :])/np.linalg.norm(self.C[i, :])
+
+# Nouvelle classe qui est pareille que Profil_Concentration sauf le schéma utilisé pour la dérivé dC/dr qui est centrée plutôt qu'avant          
+class Profil_Concentration_Centree(Profil_Concentration):
+    def Matrice_A(self):
+        """
+
+        Returns
+        -------
+        Membre de gauche. Matrice A des coefficients
+
+        """
+        self.A = sp.lil_matrix((self.N,self.N))
+        self.A_inverse = np.zeros((self.N,self.N))
+
+        self.A[0,0]   = -1
+        self.A[0,1]   =  1
+        self.A[-1,-1] =  1
+        
+        for i in range(1,self.N-1):
+            self.A[i, i-1]  = self.a - 0.5 * self.b/self.r[i]
+            
+            self.A[i, i]   = -2*self.a - self.e
+
+            self.A[i, i+1] = self.a + 0.5 * self.b/self.r[i]
+            
+        #storer l'inverse puisqu'elle ne change pas
+        self.A = self.A.tocsr()
+        self.A_inverse = sp.linalg.inv(self.A)
                         
             
         

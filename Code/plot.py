@@ -23,10 +23,9 @@ class Plot_Concentration():
         
     def Plot_Numerique(self):
         
-        for i in range(len(self.C)):
-            plt.scatter(self.r, self.C[i, :], label='i=%d'%i)
-        
-        
+        # for i in range(len(self.C)):
+        #     plt.scatter(self.r, self.C[i, :], label='i=%d'%i)
+        plt.plot(self.r, self.C[-1, :], '.r')        
         
     def Plot_Exact(self):
         plt.plot(self.r, self.C_exact, label='Solution exacte')
