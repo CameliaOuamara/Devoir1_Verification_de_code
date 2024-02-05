@@ -6,7 +6,7 @@ Fonction de resolution d'un probleme stationnaire
 import numpy as np
 # import sympy as sp
 import scipy.sparse as sp
-
+import scipy.sparse.linalg
 
 class Profil_Concentration:
 
