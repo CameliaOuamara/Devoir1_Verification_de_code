@@ -160,8 +160,13 @@ class Profil_Concentration_Centree(Profil_Concentration):
         self.A = sp.lil_matrix((self.N,self.N))
         self.A_inverse = np.zeros((self.N,self.N))
 
-        self.A[0,0]   = -1
-        self.A[0,1]   =  1
+        # self.A[0,0]   = -1
+        # self.A[0,1]   =  1
+        
+        self.A[0,0]   = -3.0
+        self.A[0,1]   =  4.0
+        self.A[0,2]   =  -1.0
+        
         self.A[-1,-1] =  1
         
         for i in range(1,self.N-1):
