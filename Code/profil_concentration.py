@@ -10,7 +10,7 @@ import scipy.sparse.linalg
 
 class Profil_Concentration:
 
-    def __init__(self, delta_r, delta_t, N, R, critere_conv):
+    def __init__(self, delta_r, delta_t, N, R, critere_conv,critere_max_iter):
         """
         Parameters
         ----------
@@ -32,6 +32,7 @@ class Profil_Concentration:
         self.Delta_r = delta_r
         self.Delta_t = delta_t
         self.critere_conv = critere_conv
+        self.critere_max_iter = critere_max_iter
         self.N = N
         self.R = R
         
@@ -128,7 +129,7 @@ class Profil_Concentration:
         #initialisation de diff_temporelle pour s'assurer qu'on soit steady à la dernière itération
         diff_temporelle = 1.0e10
         
-        while diff_temporelle>=self.critere_conv:
+        while diff_temporelle>=self.critere_conv and i < self.critere_max_iter:
             # Construction matrice B
             self.Matrice_B(self.C[i])
             

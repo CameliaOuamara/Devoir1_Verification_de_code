@@ -26,6 +26,7 @@ D_eff = 1.0e-10
 delta_t = 0.5 * delta_r*delta_r / D_eff
 
 critere_conv = 1.0e-30
+critere_max_iter = 30
 
 # # Resolution
 # Objet_Concentration = Profil_Concentration(delta_r, delta_t, N, R, critere_conv)
@@ -37,7 +38,7 @@ critere_conv = 1.0e-30
 # Objet_Graphique.Plot_Exact()
 
 # Étude convergence
-N_vect = np.arange(0,11,1, dtype=int)
+N_vect = np.arange(0,5,1, dtype=int)
 
 N_vect = 5 * 2**N_vect
 
@@ -54,7 +55,7 @@ plt.figure(0)
 for i in range(len(N_vect)):
     # print("i: ", i)
     # Resolution
-    Objet_Concentration = Profil_Concentration(delta_r_vect[i], delta_t_vect[i], N_vect[i], R, critere_conv)
+    Objet_Concentration = Profil_Concentration(delta_r_vect[i], delta_t_vect[i], N_vect[i], R, critere_conv, critere_max_iter)
     Objet_Concentration.Algorithme_Resolution()
 
     # Plot
@@ -109,7 +110,7 @@ plt.figure(4)
 for i in range(len(N_vect)):
     # print("i: ", i)
     # Resolution
-    Objet_Concentration = Profil_Concentration_Centree(delta_r_vect[i], delta_t_vect[i], N_vect[i], R, critere_conv)
+    Objet_Concentration = Profil_Concentration_Centree(delta_r_vect[i], delta_t_vect[i], N_vect[i], R, critere_conv, critere_max_iter)
     Objet_Concentration.Algorithme_Resolution()
 
     # Plot
