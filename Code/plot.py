@@ -25,12 +25,18 @@ class Plot_Concentration():
         
         # for i in range(len(self.C)):
         #     plt.scatter(self.r, self.C[i, :], label='i=%d'%i)
-        plt.plot(self.r, self.C[-1, :], '.r')        
+        plt.plot(self.r, self.C[-1, :], '.r', label = 'Solution numérique')        
         
     def Plot_Exact(self):
         plt.plot(self.r, self.C_exact, label='Solution exacte')
-        #plt.legend()
+        
+    def Save_plot(self,fileName,plotTitle):
         plt.grid()
+        plt.xlabel("r")
+        plt.ylabel("C")
+        plt.legend()
+        plt.title(plotTitle)
+        plt.savefig(fileName+".png")
         plt.show()
             
 

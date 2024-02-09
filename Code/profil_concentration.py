@@ -147,6 +147,7 @@ class Profil_Concentration:
             
             # calcul de la différence temporelle
             diff_temporelle = np.linalg.norm(self.C[i, :] - self.C[i-1, :])/np.linalg.norm(self.C[i, :])
+            print("diff temporelle: "+str(diff_temporelle))
 
 # Nouvelle classe qui est pareille que Profil_Concentration sauf le schéma utilisé pour la dérivé dC/dr qui est centrée plutôt qu'avant          
 class Profil_Concentration_Centree(Profil_Concentration):

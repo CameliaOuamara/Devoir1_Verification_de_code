@@ -25,8 +25,8 @@ delta_r = R/(N-1)
 D_eff = 1.0e-10
 delta_t = 0.5 * delta_r*delta_r / D_eff
 
-critere_conv = 1.0e-30
-critere_max_iter = 30
+critere_conv = 1.0e-14
+critere_max_iter = 100
 
 # # Resolution
 # Objet_Concentration = Profil_Concentration(delta_r, delta_t, N, R, critere_conv)
@@ -38,14 +38,14 @@ critere_max_iter = 30
 # Objet_Graphique.Plot_Exact()
 
 # Étude convergence
-N_vect = np.arange(0,5,1, dtype=int)
+N_vect = np.arange(0,7,1, dtype=int)
 
 N_vect = 5 * 2**N_vect
 
 
 delta_r_vect = R/(N_vect-1)
 
-delta_t_vect = 1.0e10 * 0.5 * delta_r_vect*delta_r_vect / D_eff
+delta_t_vect = 1.0e5 * 0.5 * delta_r_vect*delta_r_vect / D_eff
 
 erreur_vect_L1 = np.zeros(len(N_vect))
 erreur_vect_L2 = np.zeros(len(N_vect))
@@ -62,6 +62,7 @@ for i in range(len(N_vect)):
     Objet_Graphique = Plot_Concentration(Objet_Concentration.C, N_vect[i])
     Objet_Graphique.Plot_Numerique()
     Objet_Graphique.Plot_Exact()
+    Objet_Graphique.Save_plot("schema1_"+str(N_vect[i]), "Comparaison de résultat premier schéma, "+str(N_vect[i])+" noeuds")
     
     #Erreur
     erreur_vect_L1[i] = np.mean(abs(Objet_Concentration.C[-1,:] - Objet_Graphique.C_exact))
@@ -84,25 +85,31 @@ first_pt_plot_theo_L2 = erreur_vect_L2[-1] * (delta_r_vect[0]/delta_r_vect[-1])*
 first_pt_plot_theo_L_inf = erreur_vect_L_inf[-1] * (delta_r_vect[0]/delta_r_vect[-1])**ordre
 
 plt.figure(1)
-plt.loglog(delta_r_vect, erreur_vect_L1, '.r')
-plt.loglog([delta_r_vect[0], delta_r_vect[-1]], [first_pt_plot_theo_L1, erreur_vect_L1[-1]])
+plt.loglog(delta_r_vect, erreur_vect_L1, '.r', label = "résultat numérique")
+plt.loglog([delta_r_vect[0], delta_r_vect[-1]], [first_pt_plot_theo_L1, erreur_vect_L1[-1]], label = "résultat attendu selon ordre théorique")
 plt.xlabel("delta_r")
 plt.ylabel("erreur_L1")
-plt.title("Premier schéma")
+plt.legend()
+plt.title("Visualisation erreur L1 premier schéma contre solution analytique")
+plt.savefig("erreur_L1_schema1.png")
 
 plt.figure(2)
-plt.loglog(delta_r_vect, erreur_vect_L2, '.r')
-plt.loglog([delta_r_vect[0], delta_r_vect[-1]], [first_pt_plot_theo_L2, erreur_vect_L2[-1]])
+plt.loglog(delta_r_vect, erreur_vect_L2, '.r', label = "résultat numérique")
+plt.loglog([delta_r_vect[0], delta_r_vect[-1]], [first_pt_plot_theo_L2, erreur_vect_L2[-1]], label = "résultat attendu selon ordre théorique")
 plt.xlabel("delta_r")
 plt.ylabel("erreur_L2")
-plt.title("Premier schéma")
+plt.legend()
+plt.title("Visualisation erreur L2 premier schéma contre solution analytique")
+plt.savefig("erreur_L2_schema1.png")
 
 plt.figure(3)
-plt.loglog(delta_r_vect, erreur_vect_L_inf, '.r')
-plt.loglog([delta_r_vect[0], delta_r_vect[-1]], [first_pt_plot_theo_L_inf, erreur_vect_L_inf[-1]])
+plt.loglog(delta_r_vect, erreur_vect_L_inf, '.r', label = "résultat numérique")
+plt.loglog([delta_r_vect[0], delta_r_vect[-1]], [first_pt_plot_theo_L_inf, erreur_vect_L_inf[-1]], label = "résultat attendu selon ordre théorique")
 plt.xlabel("delta_r")
 plt.ylabel("erreur L_inf")
-plt.title("Premier schéma")
+plt.legend()
+plt.title("Visualisation erreur Linf premier schéma contre solution analytique")
+plt.savefig("erreur_Linf_schema1.png")
 
 
 
@@ -121,6 +128,7 @@ for i in range(len(N_vect)):
     Objet_Graphique = Plot_Concentration(Objet_Concentration.C, N_vect[i])
     Objet_Graphique.Plot_Numerique()
     Objet_Graphique.Plot_Exact()
+    Objet_Graphique.Save_plot("schema2_"+str(N_vect[i]), "Comparaison de résultat deuxième schéma, "+str(N_vect[i])+" noeuds")
     
     #Erreur
     erreur_vect_L1_Centree[i] = np.mean(abs(Objet_Concentration.C[-1,:] - Objet_Graphique.C_exact))
