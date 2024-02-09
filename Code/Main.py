@@ -75,9 +75,13 @@ for i in range(len(N_vect)):
 
 delta_r_plot = delta_r_vect[-1] - delta_r_vect[0]
 ordre = 1.0
-first_pt_plot_theo_L1 = -10.0**ordre * delta_r_plot + erreur_vect_L1[-1]
-first_pt_plot_theo_L2 = -10.0**ordre * delta_r_plot + erreur_vect_L2[-1]
-first_pt_plot_theo_L_inf = -10.0**ordre * delta_r_plot + erreur_vect_L_inf[-1]
+# first_pt_plot_theo_L1 = -10.0**ordre * delta_r_plot + erreur_vect_L1[-1]
+# first_pt_plot_theo_L2 = -10.0**ordre * delta_r_plot + erreur_vect_L2[-1]
+# first_pt_plot_theo_L_inf = -10.0**ordre * delta_r_plot + erreur_vect_L_inf[-1]
+
+first_pt_plot_theo_L1 = erreur_vect_L1[-1] * (delta_r_vect[0]/delta_r_vect[-1])**ordre
+first_pt_plot_theo_L2 = erreur_vect_L2[-1] * (delta_r_vect[0]/delta_r_vect[-1])**ordre
+first_pt_plot_theo_L_inf = erreur_vect_L_inf[-1] * (delta_r_vect[0]/delta_r_vect[-1])**ordre
 
 plt.figure(1)
 plt.loglog(delta_r_vect, erreur_vect_L1, '.r')
@@ -128,9 +132,13 @@ for i in range(len(N_vect)):
     
 
 ordre_centree = 2.0
-first_pt_plot_theo_L1_centree = -10.0**ordre_centree * delta_r_plot + erreur_vect_L1_Centree[-1]
-first_pt_plot_theo_L2_centree = -10.0**ordre_centree * delta_r_plot + erreur_vect_L2_Centree[-1]
-first_pt_plot_theo_L_inf_centree = -10.0**ordre_centree * delta_r_plot + erreur_vect_L_inf_Centree[-1]
+# first_pt_plot_theo_L1_centree = -10.0**ordre_centree * delta_r_plot + erreur_vect_L1_Centree[-1]
+# first_pt_plot_theo_L2_centree = -10.0**ordre_centree * delta_r_plot + erreur_vect_L2_Centree[-1]
+# first_pt_plot_theo_L_inf_centree = -10.0**ordre_centree * delta_r_plot + erreur_vect_L_inf_Centree[-1]
+
+first_pt_plot_theo_L1_centree = erreur_vect_L1_Centree[-1] * (delta_r_vect[0]/delta_r_vect[-1])**ordre_centree
+first_pt_plot_theo_L2_centree = erreur_vect_L2_Centree[-1] * (delta_r_vect[0]/delta_r_vect[-1])**ordre_centree
+first_pt_plot_theo_L_inf_centree = erreur_vect_L_inf_Centree[-1] * (delta_r_vect[0]/delta_r_vect[-1])**ordre_centree
 
 plt.figure(5)
 plt.loglog(delta_r_vect, erreur_vect_L1_Centree, '.r')
@@ -152,6 +160,7 @@ plt.loglog([delta_r_vect[0], delta_r_vect[-1]], [first_pt_plot_theo_L_inf_centre
 plt.xlabel("delta_r")
 plt.ylabel("erreur L_inf")
 plt.title("Deuxième schéma")
+plt.show()
 
 
 
