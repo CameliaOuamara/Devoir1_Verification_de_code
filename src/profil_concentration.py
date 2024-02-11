@@ -1,9 +1,10 @@
 """
-Fonction de resolution d'un probleme stationnaire
+Classe qui calcule la solution numerique du probleme étudié pour une discretisation geometrique donnée
 """
 
 # Libraries
 import numpy as np
+
 # import sympy as sp
 import scipy.sparse as sp
 import scipy.sparse.linalg
@@ -14,7 +15,7 @@ class Profil_Concentration:
         """
         Parameters
         ----------
-        delta_x : float
+        delta_r : float
             Pas geometrique en [m].
         delta_t : float
             Pas de temps en [s].
@@ -143,11 +144,11 @@ class Profil_Concentration:
             # Avancer au temps suivant
             self.t += self.Delta_t
             i+= 1
-            print("i: ", i)
+            
             
             # calcul de la différence temporelle
             diff_temporelle = np.linalg.norm(self.C[i, :] - self.C[i-1, :])/np.linalg.norm(self.C[i, :])
-            print("diff temporelle: "+str(diff_temporelle))
+            
 
 # Nouvelle classe qui est pareille que Profil_Concentration sauf le schéma utilisé pour la dérivé dC/dr qui est centrée plutôt qu'avant          
 class Profil_Concentration_Centree(Profil_Concentration):

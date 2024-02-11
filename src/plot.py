@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-Plot le profil de concentration
+Classe qui trace le profil de concentration numerique dans le cylindre suivant le rayon pour une solution donnée
+Trace le profil de concentration analytique du probleme
 """
 import numpy as np
 import matplotlib.pyplot as plt

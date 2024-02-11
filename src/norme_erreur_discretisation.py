@@ -2,6 +2,8 @@
 Calcul les normes L1 L2 et Linf de l'erreur de discretisation de la solution numerique
 """
 
+import numpy as np
+
 class Norme_Erreur_Discretisation () :
     def __init__(self, solution_exacte, solution_numerique) :
         self.u_exact = solution_exacte
