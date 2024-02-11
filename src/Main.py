@@ -75,7 +75,7 @@ extrapolated_value = fit_function(delta_r_vect[-1])
 plt.loglog(delta_r_vect, fit_function(delta_r_vect), linestyle='--', color='r')
 
 # Afficher l'équation de la régression en loi de puissance pour la norme L1
-equation_text = f'$L_1 = {np.exp(constant_logreg):.4f} \\times Δr^{{{exponent_logreg:.4f}}}$'
+equation_text = f'$L_1 = {np.exp(constant_logreg):.4E} \\times Δr^{{{exponent_logreg:.4f}}}$'
 equation_text_obj = plt.text(0.5, 0.05, equation_text, fontsize=12, transform=plt.gca().transAxes, color='k')
 
 # Graphique log-log norme de l'erreur L2 vs delta_r
@@ -96,8 +96,8 @@ fit_function = lambda x: np.exp(fit_function_log(np.log(x)))
 extrapolated_value = fit_function(delta_r_vect[-1])
 plt.loglog(delta_r_vect, fit_function(delta_r_vect), linestyle='--', color='g')
 
-# Afficher l'équation de la régression en loi de puissance pour la norme L1
-equation_text = f'$L_2 = {np.exp(constant_logreg):.4f} \\times Δr^{{{exponent_logreg:.4f}}}$'
+# Afficher l'équation de la régression en loi de puissance pour la norme L2
+equation_text = f'$L_2 = {np.exp(constant_logreg):.4E} \\times Δr^{{{exponent_logreg:.4f}}}$'
 equation_text_obj = plt.text(0.5, 0.15, equation_text, fontsize=12, transform=plt.gca().transAxes, color='k')
 
 # Graphique log-log norme de l'erreur Linf vs delta_r
@@ -119,7 +119,7 @@ extrapolated_value = fit_function(delta_r_vect[-1])
 plt.loglog(delta_r_vect, fit_function(delta_r_vect), linestyle='--', color='m')
 
 # Afficher l'équation de la régression en loi de puissance pour la norme Linf
-equation_text = f'$L_\infty = {np.exp(constant_logreg):.4f} \\times Δr^{{{exponent_logreg:.4f}}}$'
+equation_text = f'$L_\infty = {np.exp(constant_logreg):.4E} \\times Δr^{{{exponent_logreg:.4f}}}$'
 equation_text_obj = plt.text(0.5, 0.25, equation_text, fontsize=12, transform=plt.gca().transAxes, color='k')
 
 plt.xlabel("delta_r")
@@ -127,7 +127,7 @@ plt.ylabel("Norme de l'erreur")
 plt.legend()
 plt.grid()
 plt.title("Normes des erreurs L1, L2 et $L_\infty$ schéma d'ordre 1 en fonction de N")
-#plt.savefig("Norme_des_erreurs_Schema_1.png")
+plt.savefig("/home/endymion/mec8211-15/devoir1_equipe/Devoir1_Verification_de_code/results/Norme_des_erreurs_Schema_1.png")
 plt.show()
 
 #%%
@@ -183,7 +183,7 @@ extrapolated_value = fit_function(delta_r_vect[-1])
 plt.loglog(delta_r_vect, fit_function(delta_r_vect), linestyle='--', color='r')
 
 # Afficher l'équation de la régression en loi de puissance pour la norme L1
-equation_text = f'$L_1 = {np.exp(constant_logreg):.4f} \\times Δr^{{{exponent_logreg:.4f}}}$'
+equation_text = f'$L_1 = {np.exp(constant_logreg):.4E} \\times Δr^{{{exponent_logreg:.4f}}}$'
 equation_text_obj = plt.text(0.05, 0.05, equation_text, fontsize=12, transform=plt.gca().transAxes, color='k')
 
 # Graphique log-log norme de l'erreur L2 vs delta_r
@@ -205,7 +205,7 @@ extrapolated_value = fit_function(delta_r_vect[-1])
 plt.loglog(delta_r_vect, fit_function(delta_r_vect), linestyle='--', color='g')
 
 # Afficher l'équation de la régression en loi de puissance pour la norme L2
-equation_text = f'$L_2 = {np.exp(constant_logreg):.4f} \\times Δr^{{{exponent_logreg:.4f}}}$'
+equation_text = f'$L_2 = {np.exp(constant_logreg):.4E} \\times Δr^{{{exponent_logreg:.4f}}}$'
 equation_text_obj = plt.text(0.05, 0.15, equation_text, fontsize=12, transform=plt.gca().transAxes, color='k')
 
 # Graphique log-log norme de l'erreur Linf vs delta_r
@@ -227,7 +227,7 @@ extrapolated_value = fit_function(delta_r_vect[-1])
 plt.loglog(delta_r_vect, fit_function(delta_r_vect), linestyle='--', color='m')
 
 # Afficher l'équation de la régression en loi de puissance pour la norme Linf
-equation_text = f'$Linf = {np.exp(constant_logreg):.4f} \\times Δr^{{{exponent_logreg:.4f}}}$'
+equation_text = f'$Linf = {np.exp(constant_logreg):.4E} \\times Δr^{{{exponent_logreg:.4f}}}$'
 equation_text_obj = plt.text(0.05, 0.25, equation_text, fontsize=12, transform=plt.gca().transAxes, color='k')
 
 plt.xlabel("delta_r")
@@ -235,7 +235,7 @@ plt.ylabel("erreur L_inf")
 plt.legend()
 plt.grid()
 plt.title("Normes des erreurs L1, L2 et $L_\infty$ schéma d'ordre 2 en fonction de N")
-#plt.savefig("Norme_des_erreurs_Schema_2.png")
+plt.savefig("/home/endymion/mec8211-15/devoir1_equipe/Devoir1_Verification_de_code/results/Norme_des_erreurs_Schema_2.png")
 plt.show()
 
 

@@ -43,7 +43,7 @@ class Etude_Convergence():
             Objet_Graphique.Plot_Numerique()
             Objet_Graphique.Plot_Exact()
             #Objet_Graphique.Save_plot("schema1_"+str(N_vect[i]), "Comparaison de résultat premier schéma, "+str(N_vect[i])+" noeuds")
-            Objet_Graphique.Save_plot("schema %d_%d"%(self.schema,self.N_vect[i]), "Comparaison de résultat schéma %d ,%d noeuds"%(self.schema, self.N_vect[i]))
+            Objet_Graphique.Save_plot("/home/endymion/mec8211-15/devoir1_equipe/Devoir1_Verification_de_code/results/schema_%d_%d"%(self.schema,self.N_vect[i]), "Comparaison de résultat schéma %d ,%d noeuds"%(self.schema, self.N_vect[i]))
             
             # Erreur
             Objet_Norme_Erreur = Norme_Erreur_Discretisation(Objet_Graphique.C_exact, Objet_Concentration.C[-1,:])
