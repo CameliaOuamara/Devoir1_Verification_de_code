@@ -31,6 +31,7 @@ R = 0.5                                              # Rayon du cylindre [m]
 N = 100                                              # Nombre de points de discretisation [-]
 delta_r = R/(N-1)                                    # Taille de l'intervalle geometrique [m]
 D_eff = 1.0e-10                                      # Coefficient de diffusion effectif [m2/s]
+outputFolder = "/home/endymion/mec8211-15/devoir1_equipe/Devoir1_Verification_de_code/results/"
 
 # Règle de pouce : Prendre un dt à la limite de la stabilité pour le schéma explicite
 delta_t = 0.5 * delta_r*delta_r / D_eff              # Pas de temps [s]
@@ -52,7 +53,7 @@ delta_t_vect = 1.0e5 * 0.5 * delta_r_vect*delta_r_vect / D_eff # Vecteur Delta t
 plt.figure(0)
 
 Objet_Etude_Convergence = Etude_Convergence(delta_r_vect, delta_t_vect, N_vect, R, critere_convergence, critere_max_iter, 1)
-erreur_vect_L1, erreur_vect_L2, erreur_vect_L_inf = Objet_Etude_Convergence.Boucle_iterations()
+erreur_vect_L1, erreur_vect_L2, erreur_vect_L_inf = Objet_Etude_Convergence.Boucle_iterations(outputFolder)
 
 plt.figure(1)
 
@@ -127,7 +128,7 @@ plt.ylabel("Norme de l'erreur")
 plt.legend()
 plt.grid()
 plt.title("Normes des erreurs L1, L2 et $L_\infty$ schéma d'ordre 1 en fonction de N")
-plt.savefig("/home/endymion/mec8211-15/devoir1_equipe/Devoir1_Verification_de_code/results/Norme_des_erreurs_Schema_1.png")
+plt.savefig(outputFolder+"Norme_des_erreurs_Schema_1.png")
 plt.show()
 
 #%%
@@ -140,7 +141,7 @@ plt.show()
 
 plt.figure(2)
 Objet_Etude_Convergence = Etude_Convergence(delta_r_vect, delta_t_vect, N_vect, R, critere_convergence, critere_max_iter, 2)
-erreur_vect_L1_Centree, erreur_vect_L2_Centree, erreur_vect_L_inf_Centree = Objet_Etude_Convergence.Boucle_iterations()
+erreur_vect_L1_Centree, erreur_vect_L2_Centree, erreur_vect_L_inf_Centree = Objet_Etude_Convergence.Boucle_iterations(outputFolder)
 
 # for i in range(len(N_vect)):
 #     # print("i: ", i)
@@ -235,7 +236,7 @@ plt.ylabel("erreur L_inf")
 plt.legend()
 plt.grid()
 plt.title("Normes des erreurs L1, L2 et $L_\infty$ schéma d'ordre 2 en fonction de N")
-plt.savefig("/home/endymion/mec8211-15/devoir1_equipe/Devoir1_Verification_de_code/results/Norme_des_erreurs_Schema_2.png")
+plt.savefig(outputFolder+"Norme_des_erreurs_Schema_2.png")
 plt.show()
 
 
