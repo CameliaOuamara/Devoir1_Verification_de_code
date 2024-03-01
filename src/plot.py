@@ -7,7 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 class Plot_Concentration():
-    def __init__(self, C, N):
+    def __init__(self, C, N, sol_MNP):
         # Entrées :
         self.N = N
         self.C = C
@@ -22,11 +22,21 @@ class Plot_Concentration():
         
         self.C_exact = (0.25*self.S*self.R**2*(self.r**2/self.R**2-1)/self.Deff + self.Ce)
         
+        self.sol_MNP = sol_MNP
+        
+        
     def Plot_Numerique(self):
         
         # for i in range(len(self.C)):
         #     plt.scatter(self.r, self.C[i, :], label='i=%d'%i)
         plt.plot(self.r, self.C[-1, :], '.r', label = 'Solution numérique')        
+        
+    # def Plot_MNP(self):
+        
+    #     # for i in range(len(self.C)):
+    #     #     plt.scatter(self.r, self.C[i, :], label='i=%d'%i)
+    #     plt.plot(self.r, self.sol_MNP(), '.r', label = 'Solution MNP')    
+
         
     def Plot_Exact(self):
         plt.plot(self.r, self.C_exact, label='Solution exacte')

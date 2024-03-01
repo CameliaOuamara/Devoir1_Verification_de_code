@@ -45,13 +45,23 @@ N_vect = 5 * 2**N_vect
 delta_r_vect = R/(N_vect-1)                          # Vecteur Delta r correspondant au vecteur N precedent
 delta_t_vect = 1.0e5 * 0.5 * delta_r_vect*delta_r_vect / D_eff # Vecteur Delta t correspondant au vecteur Delta r precedent
 
+
+# -----------------------------------------------------------------------------------------------------------------
+#                           Solution avec le maillage le plus fin (pour MNP)
+# -----------------------------------------------------------------------------------------------------------------
+sol_MNP = Profil_Concentration_Centree(delta_r_vect[-1], delta_t_vect[-1], N_vect[-1], R, critere_convergence, critere_max_iter)
+sol_MNP.Algorithme_Resolution()
+nb_time_step = sol_MNP.C.shape[0]
+r_fine_mesh = np.linspace(0, R, N_vect[-1])
+t_fine_mesh = np.linspace(0, delta_t_vect[-1]*(nb_time_step-1), nb_time_step)
+spline_bicubic = sp.interpolate.RectBivariateSpline(t_fine_mesh, r_fine_mesh, sol_MNP.C[:,:])
 # ----------------------------------------------------------------------------------------
 #          Schéma 1 : Discretisation d'ordre 1 en temps et 1 en espace
 # ----------------------------------------------------------------------------------------
 
 plt.figure(0)
 
-Objet_Etude_Convergence = Etude_Convergence(delta_r_vect, delta_t_vect, N_vect, R, critere_convergence, critere_max_iter, 1)
+Objet_Etude_Convergence = Etude_Convergence(delta_r_vect, delta_t_vect, N_vect, R, critere_convergence, critere_max_iter, 1, sol_MNP.C[-1,:], spline_bicubic)
 erreur_vect_L1, erreur_vect_L2, erreur_vect_L_inf = Objet_Etude_Convergence.Boucle_iterations()
 
 plt.figure(1)
@@ -139,9 +149,8 @@ plt.show()
 # erreur_vect_L_inf_Centree = np.zeros(len(N_vect))
 
 plt.figure(2)
-Objet_Etude_Convergence = Etude_Convergence(delta_r_vect, delta_t_vect, N_vect, R, critere_convergence, critere_max_iter, 2)
+Objet_Etude_Convergence = Etude_Convergence(delta_r_vect, delta_t_vect, N_vect, R, critere_convergence, critere_max_iter, 2, sol_MNP.C[-1,:], spline_bicubic)
 erreur_vect_L1_Centree, erreur_vect_L2_Centree, erreur_vect_L_inf_Centree = Objet_Etude_Convergence.Boucle_iterations()
-
 # for i in range(len(N_vect)):
 #     # print("i: ", i)
 #     # Resolution
