@@ -236,7 +236,7 @@ class Profil_Concentration_Centree_MNP(Profil_Concentration_Centree):
         """
         dc_dt = self.spline_bicubic.partial_derivative(1,0)
         dc_dr = self.spline_bicubic.partial_derivative(0,1)
-        d2c_dr2 = self.spline_bicubic.partial_derivative(0,1)
+        d2c_dr2 = self.spline_bicubic.partial_derivative(0,2)
         c = self.spline_bicubic
 
         # S_MNP = dc_dt(self.t,self.r[0]) - self.Deff*(1/self.r[0] * dc_dr(self.t,self.r[0]) + d2c_dr2(self.t,self.r[0])) + self.k * c(self.t,self.r[0])
@@ -248,7 +248,9 @@ class Profil_Concentration_Centree_MNP(Profil_Concentration_Centree):
         
         for i in range(1,self.N-1):
             S_MNP = dc_dt(self.t,self.r[i]) - self.Deff*(1/self.r[i] * dc_dr(self.t,self.r[i]) + d2c_dr2(self.t,self.r[i])) + self.k * c(self.t,self.r[i])
+            # S_MNP = -self.Deff*(1/self.r[i] * dc_dr(self.t,self.r[i]) + d2c_dr2(self.t,self.r[i])) + self.k * c(self.t,self.r[i])
             self.B[i,0] = - self.e * C_t[i] + S_MNP           
+            # self.B[i,0] = - self.e * C_t[i]         
             
                 
 class Profil_Concentration_MNP(Profil_Concentration):
@@ -303,9 +305,9 @@ class Profil_Concentration_MNP(Profil_Concentration):
         -------
         Membre de droite. Matrice des resultats B.
         """
-        dc_dt = self.spline_bicubic.partial_derivative(0,1)
-        dc_dr = self.spline_bicubic.partial_derivative(1,0)
-        d2c_dr2 = self.spline_bicubic.partial_derivative(2,0)
+        dc_dt = self.spline_bicubic.partial_derivative(1,0)
+        dc_dr = self.spline_bicubic.partial_derivative(0,1)
+        d2c_dr2 = self.spline_bicubic.partial_derivative(0,2)
         c = self.spline_bicubic
 
         # S_MNP = dc_dt(self.t,self.r[0]) - self.Deff*(1/self.r[0] * dc_dr(self.t,self.r[0]) + d2c_dr2(self.t,self.r[0])) + self.k * c(self.t,self.r[0])
@@ -317,8 +319,9 @@ class Profil_Concentration_MNP(Profil_Concentration):
         
         for i in range(1,self.N-1):
             S_MNP = dc_dt(self.t,self.r[i]) - self.Deff*(1/self.r[i] * dc_dr(self.t,self.r[i]) + d2c_dr2(self.t,self.r[i])) + self.k * c(self.t,self.r[i])
+            # S_MNP = -self.Deff*(1/self.r[i] * dc_dr(self.t,self.r[i]) + d2c_dr2(self.t,self.r[i])) + self.k * c(self.t,self.r[i])
             self.B[i,0] = - self.e * C_t[i] + S_MNP           
-                    
+            # self.B[i,0] = - self.e * C_t[i]       
         
 
         

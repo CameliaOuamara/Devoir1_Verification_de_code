@@ -11,7 +11,7 @@ class Norme_Erreur_Discretisation () :
 
     def Calcul_Norme(self) :
         if len(self.u_numerique) != len(self.u_exact):
-            u_numerique = np.interp(np.arange(len(self.u_exact))/len(self.u_exact), np.arange(len(self.u_numerique))/len(self.u_numerique), self.u_numerique)
+            u_numerique = np.interp(np.arange(len(self.u_exact))/(len(self.u_exact)-1), np.arange(len(self.u_numerique))/(len(self.u_numerique)-1), self.u_numerique)
             self.Erreur_L1 = np.mean(abs(u_numerique - self.u_exact))
             self.Erreur_L2 = np.sqrt(np.mean((u_numerique - self.u_exact)*(u_numerique - self.u_exact)))
             self.Erreur_Linf = np.max(abs(u_numerique - self.u_exact))

@@ -31,11 +31,11 @@ class Plot_Concentration():
         #     plt.scatter(self.r, self.C[i, :], label='i=%d'%i)
         plt.plot(self.r, self.C[-1, :], '.r', label = 'Solution numérique')        
         
-    # def Plot_MNP(self):
+    def Plot_MNP(self):
         
-    #     # for i in range(len(self.C)):
-    #     #     plt.scatter(self.r, self.C[i, :], label='i=%d'%i)
-    #     plt.plot(self.r, self.sol_MNP(), '.r', label = 'Solution MNP')    
+        # for i in range(len(self.C)):
+        #     plt.scatter(self.r, self.C[i, :], label='i=%d'%i)
+        plt.plot(np.linspace(0,max(self.r),len(self.sol_MNP)), self.sol_MNP, '.b', label = 'Solution MNP')    
 
         
     def Plot_Exact(self):
