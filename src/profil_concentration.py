@@ -41,6 +41,7 @@ class Profil_Concentration:
         self.Ce = 12 # [mol/m3]
         self.Deff = 10**-10 # [m2/s]
         self.S = 8*10**-9 # [mol/m3/s]
+        self.k = 4*10**-9 # []
         
         self.a = self.Deff/(self.Delta_r**2)
         self.b = self.Deff/self.Delta_r
@@ -65,7 +66,7 @@ class Profil_Concentration:
         for i in range(1,self.N-1):
             self.A[i, i-1]  = self.a
             
-            self.A[i, i]   = -2*self.a - self.b/self.r[i] - self.e
+            self.A[i, i]   = -2*self.a - self.b/self.r[i] - self.e - self.k
 
             self.A[i, i+1] = self.a + self.b/self.r[i]
             
@@ -92,7 +93,8 @@ class Profil_Concentration:
         self.B[-1,0] = self.Ce
         
         for i in range(1,self.N-1):
-            self.B[i,0] = self.S - self.e * C_t[i]
+            self.B[i,0] =  - self.e * C_t[i]
+            # self.S
             
         self.B = self.B.tocsc()
             
