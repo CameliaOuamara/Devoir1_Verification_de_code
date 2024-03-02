@@ -35,16 +35,16 @@ class Etude_Convergence():
 
             # Resolution
             if self.schema==1:
-                Objet_Concentration = Profil_Concentration_MNP(self.delta_r_vect[i], self.delta_t_vect[i], self.N_vect[i], self.R, self.critere_convergence, self.critere_max_iter, self.spline_bicubic)
+                Objet_Concentration = Profil_Concentration_MNP(self.delta_r_vect[i], self.delta_t_vect[-1], self.N_vect[i], self.R, self.critere_convergence, self.critere_max_iter, self.spline_bicubic)
             elif self.schema == 2:
-                Objet_Concentration = Profil_Concentration_Centree_MNP(self.delta_r_vect[i], self.delta_t_vect[i], self.N_vect[i], self.R, self.critere_convergence, self.critere_max_iter, self.spline_bicubic)
+                Objet_Concentration = Profil_Concentration_Centree_MNP(self.delta_r_vect[i], self.delta_t_vect[-1], self.N_vect[i], self.R, self.critere_convergence, self.critere_max_iter, self.spline_bicubic)
             Objet_Concentration.Algorithme_Resolution()
 
             # Plot
             Objet_Graphique = Plot_Concentration(Objet_Concentration.C, self.N_vect[i], self.sol_MNP)
             Objet_Graphique.Plot_Numerique()
             # Objet_Graphique.Plot_Exact()
-            # Objet_Graphique.Plot_MNP()
+            Objet_Graphique.Plot_MNP()
 
             #Objet_Graphique.Save_plot("schema1_"+str(N_vect[i]), "Comparaison de résultat premier schéma, "+str(N_vect[i])+" noeuds")
             Objet_Graphique.Save_plot("schema %d_%d"%(self.schema,self.N_vect[i]), "Comparaison de résultat schéma %d ,%d noeuds"%(self.schema, self.N_vect[i]))
