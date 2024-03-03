@@ -13,8 +13,9 @@ Le code resout le cas transitoire et permet d'atteindre le regime permanent.
 
 # Libraries
 import numpy as np
-import sympy as sp
+#import scipy as sp
 import matplotlib.pyplot as plt
+import scipy.interpolate
 
 # Functions
 from profil_concentration import *
@@ -31,7 +32,7 @@ R = 0.5                                              # Rayon du cylindre [m]
 N = 100                                              # Nombre de points de discretisation [-]
 delta_r = R/(N-1)                                    # Taille de l'intervalle geometrique [m]
 D_eff = 1.0e-10                                      # Coefficient de diffusion effectif [m2/s]
-outputFolder = "/home/endymion/mec8211-15/devoir1_equipe/Devoir1_Verification_de_code/results/"
+outputFolder = "D:\\POLY\\DOC\\SESSION_H2024\\verification_et_validation\\devoir2_equipe\\git\\Devoir1_Verification_de_code\\results"
 
 # Règle de pouce : Prendre un dt à la limite de la stabilité pour le schéma explicite
 delta_t = 0.5 * delta_r*delta_r / D_eff              # Pas de temps [s]
@@ -45,9 +46,11 @@ N_vect = np.arange(0,7,1, dtype=int)                 # Vecteur contenant les N u
 N_vect = 5 * 2**N_vect
 delta_r_vect = R/(N_vect-1)                          # Vecteur Delta r correspondant au vecteur N precedent
 delta_t_vect = 1.0e5 * 0.5 * delta_r_vect*delta_r_vect / D_eff # Vecteur Delta t correspondant au vecteur Delta r precedent
+print(delta_r_vect)
+print(delta_t_vect)
 # delta_t_vect = 0.5 * delta_r_vect*delta_r_vect / D_eff # Vecteur Delta t correspondant au vecteur Delta r precedent
 
-
+'''
 # -----------------------------------------------------------------------------------------------------------------
 #                           Solution avec le maillage le plus fin (pour MNP)
 # -----------------------------------------------------------------------------------------------------------------
@@ -141,7 +144,7 @@ plt.grid()
 plt.title("Normes des erreurs L1, L2 et $L_\infty$ schéma d'ordre 1 en fonction de N")
 plt.savefig(outputFolder+"Norme_des_erreurs_Schema_1.png")
 plt.show()
-
+'''
 # -----------------------------------------------------------------------------------------------------------------
 #                           Solution avec le maillage le plus fin (pour MNP)
 # -----------------------------------------------------------------------------------------------------------------

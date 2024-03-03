@@ -9,6 +9,8 @@ import numpy as np
 # import scipy.sparse as sp
 # import scipy.sparse.linalg
 import scipy as sp
+import scipy.sparse
+import scipy.sparse.linalg
 
 class Profil_Concentration:
 
