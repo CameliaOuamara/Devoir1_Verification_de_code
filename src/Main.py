@@ -39,13 +39,13 @@ delta_t = 0.5 * delta_r*delta_r / D_eff              # Pas de temps [s]
 
 # Critere de convergence
 critere_convergence = 1.0e-14                        # Critere sur la valeur de la concentration a l'iteration i vs i-1
-critere_max_iter = 100000                               # Nombre minimum d'iterations a realiser pour la convergence vers le regime permanent
+critere_max_iter = 400                              # Nombre minimum d'iterations a realiser pour la convergence vers le regime permanent
 
 # Étude convergence
-N_vect = np.arange(0,7,1, dtype=int)                 # Vecteur contenant les N utilisés dans l'étude de convergence
+N_vect = np.arange(0,5,1, dtype=int)                 # Vecteur contenant les N utilisés dans l'étude de convergence
 N_vect = 5 * 2**N_vect
 delta_r_vect = R/(N_vect-1)                          # Vecteur Delta r correspondant au vecteur N precedent
-delta_t_vect = 1.0e5 * 0.5 * delta_r_vect*delta_r_vect / D_eff # Vecteur Delta t correspondant au vecteur Delta r precedent
+delta_t_vect = 1.0e7 * 0.5 +0.0*delta_r_vect*delta_r_vect / D_eff # Vecteur Delta t correspondant au vecteur Delta r precedent
 print(delta_r_vect)
 print(delta_t_vect)
 # delta_t_vect = 0.5 * delta_r_vect*delta_r_vect / D_eff # Vecteur Delta t correspondant au vecteur Delta r precedent
@@ -166,6 +166,7 @@ spline_bicubic_Centree = sp.interpolate.RectBivariateSpline(t_fine_mesh, r_fine_
 plt.figure(2)
 Objet_Etude_Convergence = Etude_Convergence(delta_r_vect, delta_t_vect, N_vect, R, critere_convergence, critere_max_iter, 2, sol_MNP_Centree.C[-1,:], spline_bicubic_Centree)
 erreur_vect_L1_Centree, erreur_vect_L2_Centree, erreur_vect_L_inf_Centree = Objet_Etude_Convergence.Boucle_iterations(outputFolder)
+
 # for i in range(len(N_vect)):
 #     # print("i: ", i)
 #     # Resolution

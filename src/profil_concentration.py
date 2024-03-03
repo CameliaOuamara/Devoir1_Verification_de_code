@@ -115,12 +115,14 @@ class Profil_Concentration:
         
         # Initailisation matrice concentration a chaque temps
         self.C = np.zeros((1, self.N))
+        self.C_analytic = np.zeros((1, self.N))
         # self.C[0,:] = C_t
             
         #initialisation de diff_temporelle pour s'assurer qu'on soit steady à la dernière itération
         diff_temporelle = 1.0e10
         
-        while diff_temporelle>=self.critere_conv and i < self.critere_max_iter:
+        #while diff_temporelle>=self.critere_conv and i < self.critere_max_iter:
+        while i < self.critere_max_iter:
             # Construction matrice B
             self.Matrice_B(self.C[i])
             
@@ -138,7 +140,14 @@ class Profil_Concentration:
             
             # calcul de la différence temporelle
             diff_temporelle = np.linalg.norm(self.C[i, :] - self.C[i-1, :])/np.linalg.norm(self.C[i, :])
-        
+        print("iter needed:")
+        print(i)
+        print("final time:")
+        print(self.t)
+        if diff_temporelle < self.critere_conv:
+            print("STOP CRITERIA REACHED: CONV TIME.DERIV.")
+        if i >= self.critere_max_iter:
+            print("STOP CRITERIA REACHED: MAX ITER")
         # for i in range(self.critere_max_iter):
             # # Construction matrice B
             # self.Matrice_B(self.C[i])
@@ -241,12 +250,16 @@ class Profil_Concentration_Centree_MNP(Profil_Concentration_Centree):
         d2c_dr2 = self.spline_bicubic.partial_derivative(0,2)
         c = self.spline_bicubic
 
+        #computing spline solution while we're at it along the way
+        c_t_i = c(self.t,self.r)
+        self.C_analytic = np.append(self.C_analytic, c_t_i, axis=0)
+
         # S_MNP = dc_dt(self.t,self.r[0]) - self.Deff*(1/self.r[0] * dc_dr(self.t,self.r[0]) + d2c_dr2(self.t,self.r[0])) + self.k * c(self.t,self.r[0])
         
         self.B = sp.sparse.lil_matrix((self.N, 1))
         
-        self.B[0,0]  = 0.0
-        self.B[-1,0] = self.Ce
+        self.B[0,0]  = 0.0 + dc_dt(self.t,self.r[0])[0][0]
+        self.B[-1,0] = c(self.t,self.r[-1])[0][0]
         
         for i in range(1,self.N-1):
             S_MNP = dc_dt(self.t,self.r[i]) - self.Deff*(1/self.r[i] * dc_dr(self.t,self.r[i]) + d2c_dr2(self.t,self.r[i])) + self.k * c(self.t,self.r[i])
