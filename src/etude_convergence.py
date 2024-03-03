@@ -22,6 +22,7 @@ class Etude_Convergence():
         self.critere_convergence = critere_convergence
         self.critere_max_iter = critere_max_iter
         self.schema = schema
+
         
     def Boucle_iterations(self,outputFolder):
         erreur_vect_L1 = np.zeros(len(self.N_vect))

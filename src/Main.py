@@ -15,6 +15,7 @@ Le code resout le cas transitoire et permet d'atteindre le regime permanent.
 import numpy as np
 import sympy as sp
 import matplotlib.pyplot as plt
+import pandas as pd
 
 # Functions
 from profil_concentration import *
@@ -23,15 +24,32 @@ from norme_erreur_discretisation import *
 from etude_convergence import *
 
 # -----------------------------------------------------------------------------------------------------------------
+#                                 Extraction solution COMSOL
+# -----------------------------------------------------------------------------------------------------------------
+
+# Solution Comsol
+
+data = pd.read_csv('Comsol_results.txt',sep='\s+',header=None)
+data = pd.DataFrame(data)
+
+x_Comsol = data[0]
+y_Comsol = data[1]
+
+# -----------------------------------------------------------------------------------------------------------------
 #                                               Debut du code
 # -----------------------------------------------------------------------------------------------------------------
 
 # Données 
 R = 0.5                                              # Rayon du cylindre [m]
 N = 100                                              # Nombre de points de discretisation [-]
+Ce = 12
 delta_r = R/(N-1)                                    # Taille de l'intervalle geometrique [m]
 D_eff = 1.0e-10                                      # Coefficient de diffusion effectif [m2/s]
 outputFolder = "y:\DOCuments\Verification et validation\Devoir1_Verification_de_code"
+
+# Solution MMS
+Terme_Source = 0
+CL_R = Ce
 
 # Règle de pouce : Prendre un dt à la limite de la stabilité pour le schéma explicite
 delta_t = 0.5 * delta_r*delta_r / D_eff              # Pas de temps [s]
@@ -41,7 +59,8 @@ critere_convergence = 1.0e-14                        # Critere sur la valeur de 
 critere_max_iter = 100                               # Nombre minimum d'iterations a realiser pour la convergence vers le regime permanent
 
 # Étude convergence
-N_vect = np.arange(0,7,1, dtype=int)                 # Vecteur contenant les N utilisés dans l'étude de convergence
+#N_vect = np.arange(0,7,1, dtype=int)                 # Vecteur contenant les N utilisés dans l'étude de convergence
+N_vect = np.arange(9,10,1, dtype=int)
 N_vect = 5 * 2**N_vect
 delta_r_vect = R/(N_vect-1)                          # Vecteur Delta r correspondant au vecteur N precedent
 delta_t_vect = 1.0e5 * 0.5 * delta_r_vect*delta_r_vect / D_eff # Vecteur Delta t correspondant au vecteur Delta r precedent
@@ -50,10 +69,34 @@ delta_t_vect = 1.0e5 * 0.5 * delta_r_vect*delta_r_vect / D_eff # Vecteur Delta t
 #          Schéma 1 : Discretisation d'ordre 1 en temps et 1 en espace
 # ----------------------------------------------------------------------------------------
 
+# Solution numerique
+
 plt.figure(0)
 
 Objet_Etude_Convergence = Etude_Convergence(delta_r_vect, delta_t_vect, N_vect, R, critere_convergence, critere_max_iter, 1)
 erreur_vect_L1, erreur_vect_L2, erreur_vect_L_inf = Objet_Etude_Convergence.Boucle_iterations(outputFolder)
+
+# Plot solution Comsol
+
+#plt.plot(x_Comsol,y_Comsol, label="Solution Comsol")
+# Solution MMS (Temporaire)
+Ce = 12
+R = 0.5
+D = 10**-10
+k = 4*10**-9
+r, t = sy.symbols('r t')
+
+#%% Solution mms
+C_MMS = sy.exp(sy.pi*r/R)*sy.sin(t)
+C =  sy.lambdify([r, t], C_MMS, "numpy")
+r = np.linspace(0, R, 5*2**5)
+C_vec = np.zeros(len(r))
+for i in range(len(C_vec)):
+    C_vec[i] = C(r[i], 3*10**14)
+plt.plot(r, C_vec, label="MMS")
+plt.legend()
+plt.grid()
+plt.show()
 
 # plt.figure(1)
 
@@ -139,9 +182,16 @@ erreur_vect_L1, erreur_vect_L2, erreur_vect_L_inf = Objet_Etude_Convergence.Bouc
 # erreur_vect_L2_Centree = np.zeros(len(N_vect))
 # erreur_vect_L_inf_Centree = np.zeros(len(N_vect))
 
-plt.figure(2)
-Objet_Etude_Convergence = Etude_Convergence(delta_r_vect, delta_t_vect, N_vect, R, critere_convergence, critere_max_iter, 2)
-erreur_vect_L1_Centree, erreur_vect_L2_Centree, erreur_vect_L_inf_Centree = Objet_Etude_Convergence.Boucle_iterations(outputFolder)
+# plt.figure(2)
+# Objet_Etude_Convergence = Etude_Convergence(delta_r_vect, delta_t_vect, N_vect, R, critere_convergence, critere_max_iter, 2)
+# erreur_vect_L1_Centree, erreur_vect_L2_Centree, erreur_vect_L_inf_Centree = Objet_Etude_Convergence.Boucle_iterations(outputFolder)
+
+# # Plot solution Comsol
+
+# plt.plot(x_Comsol,y_Comsol, label="Solution Comsol")
+# plt.legend()
+# plt.grid()
+# plt.show()
 
 # for i in range(len(N_vect)):
 #     # print("i: ", i)

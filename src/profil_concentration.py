@@ -8,6 +8,7 @@ import numpy as np
 # import sympy as sp
 import scipy.sparse as sp
 import scipy.sparse.linalg
+import sympy as sy
 
 class Profil_Concentration:
 
@@ -73,9 +74,10 @@ class Profil_Concentration:
         #storer l'inverse puisqu'elle ne change pas
         self.A = self.A.tocsr()
         self.A_inverse = sp.linalg.inv(self.A)
+        
             
         
-    def Matrice_B(self, C_t):
+    def Matrice_B(self, C_t, t_simulation):
         """
         Parameters
         ----------
@@ -87,13 +89,38 @@ class Profil_Concentration:
         Membre de droite. Matrice des resultats B.
         """
         
+        # Solution MMS (Temporaire)
+        Ce = 12
+        R = 0.5
+        D = 10**-10
+        k = 4*10**-9
+
+        r, t = sy.symbols('r t')
+
+        # Solution mms
+        #C_MMS = Ce * sy.sin(t) * sy.sin(sy.pi*r/R)
+        C_MMS = sy.exp(sy.pi*r/R)*sy.sin(t)
+
+        # Derivées
+        dCdt   = sy.diff(C_MMS, t)
+        dCdr   = sy.diff(C_MMS, r)
+        d2Cdr2 = sy.diff(sy.diff(C_MMS, r), r)
+
+        # Terme source
+        S_MMS = D*d2Cdr2 + D*dCdr/r - k*C_MMS - dCdt
+
+        # Callable functions
+        C =  sy.lambdify([r, t], C_MMS, "numpy")
+        S =  sy.lambdify([r, t], S_MMS, "numpy")
+        dCdt = sy.lambdify([r,t], dCdt, "numpy")
+        
         self.B = sp.lil_matrix((self.N, 1))
         
-        self.B[0,0]  = 0.0
-        self.B[-1,0] = self.Ce
+        self.B[0,0]  = dCdt(0, t_simulation) #0.0
+        self.B[-1,0] = C(self.R, t_simulation) #self.Ce
         
         for i in range(1,self.N-1):
-            self.B[i,0] =  - self.e * C_t[i]
+            self.B[i,0] = - self.e * C_t[i] + S(self.r[i], t_simulation) #- self.e * C_t[i] 
             # self.S
             
         self.B = self.B.tocsc()
@@ -107,13 +134,34 @@ class Profil_Concentration:
         self.t = 0 + self.Delta_t
         i = 0
     
-        # Concentration au temps t0
-        C_t = np.zeros((1, self.N))
-        C_t_plus_1 = np.zeros((1, self.N))
+        # # Concentration au temps t0
+        # C_t = np.zeros((1, self.N))
+        # C_t_plus_1 = np.zeros((1, self.N))
+        
+        # Solution MMS (Temporaire)
+        Ce = 12
+        R = 0.5
+        D = 10**-10
+        k = 4*10**-9
+        r, t = sy.symbols('r t')
+        
+        # Solution mms
+        C_MMS = sy.exp(sy.pi*r/R)*sy.sin(t)
+        C =  sy.lambdify([r, t], C_MMS, "numpy")
+        C_vec = np.zeros(len(self.r))
+        for i in range(len(C_vec)):
+            C_vec[i] = C(self.r[i], 0)
+        
+        C_t = C(self.r, 0)
+        C_t_plus_1 = C(self.r, 0)
         
         # Initailisation matrice concentration a chaque temps
-        self.C = np.zeros((1, self.N))
+        #self.C = np.zeros((1, self.N))
         # self.C[0,:] = C_t
+        
+        self.C = np.zeros((1, self.N))
+        self.C[0,:] = C_vec
+        
 
         # while t <= self.t_final:
         #     # Construction matrice B
@@ -131,10 +179,10 @@ class Profil_Concentration:
             
         #initialisation de diff_temporelle pour s'assurer qu'on soit steady à la dernière itération
         diff_temporelle = 1.0e10
-        
+        i=0
         while diff_temporelle>=self.critere_conv and i < self.critere_max_iter:
             # Construction matrice B
-            self.Matrice_B(self.C[i])
+            self.Matrice_B(self.C[i], self.t)
             
             # Resolution du systeme matriciel
             # C_t_plus_1[0,:] = sp.linalg.spsolve(self.A, self.B)
@@ -146,11 +194,10 @@ class Profil_Concentration:
             # Avancer au temps suivant
             self.t += self.Delta_t
             i+= 1
-            
-            
+        
             # calcul de la différence temporelle
             diff_temporelle = np.linalg.norm(self.C[i, :] - self.C[i-1, :])/np.linalg.norm(self.C[i, :])
-            
+       
 
 # Nouvelle classe qui est pareille que Profil_Concentration sauf le schéma utilisé pour la dérivé dC/dr qui est centrée plutôt qu'avant          
 class Profil_Concentration_Centree(Profil_Concentration):
@@ -177,7 +224,7 @@ class Profil_Concentration_Centree(Profil_Concentration):
         for i in range(1,self.N-1):
             self.A[i, i-1]  = self.a - 0.5 * self.b/self.r[i]
             
-            self.A[i, i]   = -2*self.a - self.e
+            self.A[i, i]   = -2*self.a - self.e - self.k
 
             self.A[i, i+1] = self.a + 0.5 * self.b/self.r[i]
             
