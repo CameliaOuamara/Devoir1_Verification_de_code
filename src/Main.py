@@ -38,21 +38,32 @@ delta_t = 0.5 * delta_r*delta_r / D_eff              # Pas de temps [s]
 
 # Critere de convergence
 critere_convergence = 1.0e-14                        # Critere sur la valeur de la concentration a l'iteration i vs i-1
-critere_max_iter = 100                               # Nombre minimum d'iterations a realiser pour la convergence vers le regime permanent
+critere_max_iter = 100000                               # Nombre minimum d'iterations a realiser pour la convergence vers le regime permanent
 
 # Étude convergence
 N_vect = np.arange(0,7,1, dtype=int)                 # Vecteur contenant les N utilisés dans l'étude de convergence
 N_vect = 5 * 2**N_vect
 delta_r_vect = R/(N_vect-1)                          # Vecteur Delta r correspondant au vecteur N precedent
 delta_t_vect = 1.0e5 * 0.5 * delta_r_vect*delta_r_vect / D_eff # Vecteur Delta t correspondant au vecteur Delta r precedent
+# delta_t_vect = 0.5 * delta_r_vect*delta_r_vect / D_eff # Vecteur Delta t correspondant au vecteur Delta r precedent
 
+
+# -----------------------------------------------------------------------------------------------------------------
+#                           Solution avec le maillage le plus fin (pour MNP)
+# -----------------------------------------------------------------------------------------------------------------
+sol_MNP = Profil_Concentration_Centree(delta_r_vect[-1], delta_t_vect[-1], N_vect[-1], R, critere_convergence, critere_max_iter)
+sol_MNP.Algorithme_Resolution()
+nb_time_step = sol_MNP.C.shape[0]
+r_fine_mesh = np.linspace(0, R, N_vect[-1])
+t_fine_mesh = np.linspace(0, delta_t_vect[-1]*(nb_time_step-1), nb_time_step)
+spline_bicubic = sp.interpolate.RectBivariateSpline(t_fine_mesh, r_fine_mesh, sol_MNP.C[:,:])
 # ----------------------------------------------------------------------------------------
 #          Schéma 1 : Discretisation d'ordre 1 en temps et 1 en espace
 # ----------------------------------------------------------------------------------------
 
 plt.figure(0)
 
-Objet_Etude_Convergence = Etude_Convergence(delta_r_vect, delta_t_vect, N_vect, R, critere_convergence, critere_max_iter, 1)
+Objet_Etude_Convergence = Etude_Convergence(delta_r_vect, delta_t_vect, N_vect, R, critere_convergence, critere_max_iter, 1, sol_MNP.C[-1,:], spline_bicubic)
 erreur_vect_L1, erreur_vect_L2, erreur_vect_L_inf = Objet_Etude_Convergence.Boucle_iterations(outputFolder)
 
 plt.figure(1)
@@ -131,6 +142,16 @@ plt.title("Normes des erreurs L1, L2 et $L_\infty$ schéma d'ordre 1 en fonction
 plt.savefig(outputFolder+"Norme_des_erreurs_Schema_1.png")
 plt.show()
 
+# -----------------------------------------------------------------------------------------------------------------
+#                           Solution avec le maillage le plus fin (pour MNP)
+# -----------------------------------------------------------------------------------------------------------------
+sol_MNP_Centree = Profil_Concentration_Centree(delta_r_vect[-1], delta_t_vect[-1], N_vect[-1], R, critere_convergence, critere_max_iter)
+sol_MNP_Centree.Algorithme_Resolution()
+nb_time_step = sol_MNP_Centree.C.shape[0]
+r_fine_mesh = np.linspace(0, R, N_vect[-1])
+t_fine_mesh = np.linspace(0, delta_t_vect[-1]*(nb_time_step-1), nb_time_step)
+spline_bicubic_Centree = sp.interpolate.RectBivariateSpline(t_fine_mesh, r_fine_mesh, sol_MNP_Centree.C[:,:])
+
 #%%
 # ----------------------------------------------------------------------------------------
 #          Schéma 2 : Discretisation d'ordre 1 en temps et 2 en espace
@@ -140,9 +161,8 @@ plt.show()
 # erreur_vect_L_inf_Centree = np.zeros(len(N_vect))
 
 plt.figure(2)
-Objet_Etude_Convergence = Etude_Convergence(delta_r_vect, delta_t_vect, N_vect, R, critere_convergence, critere_max_iter, 2)
+Objet_Etude_Convergence = Etude_Convergence(delta_r_vect, delta_t_vect, N_vect, R, critere_convergence, critere_max_iter, 2, sol_MNP_Centree.C[-1,:], spline_bicubic_Centree)
 erreur_vect_L1_Centree, erreur_vect_L2_Centree, erreur_vect_L_inf_Centree = Objet_Etude_Convergence.Boucle_iterations(outputFolder)
-
 # for i in range(len(N_vect)):
 #     # print("i: ", i)
 #     # Resolution
