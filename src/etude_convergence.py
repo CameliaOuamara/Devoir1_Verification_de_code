@@ -75,14 +75,16 @@ class Etude_Convergence_MMS_spatial():
         erreur_vect_L2 = np.zeros(len(self.N_vect))
         erreur_vect_L_inf = np.zeros(len(self.N_vect))
         
-        
+        Deff = 1.0e3
+        k = 4.0e3
         for i in range(len(self.N_vect)):
 
             # Resolution
             if self.schema==1:
-                Objet_Concentration = Profil_Concentration_MMS(self.delta_r_vect[i], self.delta_t, self.N_vect[i], self.R, self.t_final)
+                Objet_Concentration = Profil_Concentration_MMS(self.delta_r_vect[i], self.delta_t, self.N_vect[i], self.R, self.t_final, Deff, k)
             elif self.schema == 2:
-                Objet_Concentration = Profil_Concentration_Centree_MMS(self.delta_r_vect[i], self.delta_t, self.N_vect[i], self.R, self.t_final)
+                Objet_Concentration = Profil_Concentration_Centree_MMS(self.delta_r_vect[i], self.delta_t, self.N_vect[i], self.R, self.t_final, Deff, k)
+
             Objet_Concentration.Algorithme_Resolution()
 
             # # Plot
@@ -121,16 +123,18 @@ class Etude_Convergence_MMS_temporel():
         erreur_vect_L2 = np.zeros(len(self.N_vect_t))
         erreur_vect_L_inf = np.zeros(len(self.N_vect_t))
         
-        
+        Deff = 1.0e-9
+        k = 4.0e-9
         for i in range(len(self.N_vect_t)):
 
             # Resolution
             if self.schema==1:
-                Objet_Concentration = Profil_Concentration_MMS(self.delta_r, self.delta_t_vect[i], self.N, self.R, self.t_final)
+                Objet_Concentration = Profil_Concentration_MMS(self.delta_r, self.delta_t_vect[i], self.N, self.R, self.t_final, Deff, k)
             elif self.schema == 2:
-                Objet_Concentration = Profil_Concentration_Centree_MMS(self.delta_r, self.delta_t_vect[i], self.N, self.R, self.t_final)
+                Objet_Concentration = Profil_Concentration_Centree_MMS(self.delta_r, self.delta_t_vect[i], self.N, self.R, self.t_final, Deff, k)
             Objet_Concentration.Algorithme_Resolution()
 
+    
             # # Plot
             Objet_Graphique = Plot_Concentration(Objet_Concentration.C, self.N, 0.0, Objet_Concentration.f_T_MMS, Objet_Concentration.Delta_t)
             Objet_Graphique.Plot_MMS()

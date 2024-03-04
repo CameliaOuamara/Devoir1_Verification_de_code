@@ -62,14 +62,12 @@ spline_bicubic = sp.interpolate.RectBivariateSpline(t_fine_mesh, r_fine_mesh, so
 
 plt.figure(0)
 
-# Objet_Etude_Convergence = Etude_Convergence(delta_r_vect, delta_t_vect, N_vect, R, critere_convergence, critere_max_iter, 1, sol_MNP.C[-1,:], spline_bicubic)
-delta_t_MMS = 0.01
+delta_t_MMS = 0.001
 t_final = 1.0
-N_vect = np.array([4, 8, 12, 16])
+N_vect = np.array([20, 40, 60, 80, 100])
 delta_r_vect = R/(N_vect-1)
 Objet_Etude_Convergence = Etude_Convergence_MMS_spatial(delta_r_vect, delta_t_MMS, N_vect, R, t_final, 1)
 erreur_vect_L1, erreur_vect_L2, erreur_vect_L_inf = Objet_Etude_Convergence.Boucle_iterations()
-Erreur_matrice = Objet_Etude_Convergence.Erreur_matrice
 
 plt.figure(1)
 
@@ -139,13 +137,14 @@ plt.loglog(delta_r_vect, fit_function(delta_r_vect), linestyle='--', color='m')
 equation_text = f'$L_\infty = {np.exp(constant_logreg):.4f} \\times Δr^{{{exponent_logreg:.4f}}}$'
 equation_text_obj = plt.text(0.5, 0.25, equation_text, fontsize=12, transform=plt.gca().transAxes, color='k')
 
-plt.xlabel("delta_r")
+plt.xlabel("$\Delta$r")
 plt.ylabel("Norme de l'erreur")
 plt.legend()
 plt.grid()
-plt.title("Normes des erreurs L1, L2 et $L_\infty$ schéma d'ordre 1 en fonction de N")
-#plt.savefig("Norme_des_erreurs_Schema_1.png")
+plt.title("Normes des erreurs L1, L2 et $L_\infty$ avec schéma d'ordre 1 en \n fonction de $\Delta$r avec méthode MMS")
+plt.savefig("Norme_des_erreurs_Schema_1_MMS_Spatial.png")
 plt.show()
+
 
 # -----------------------------------------------------------------------------------------------------------------
 #                           Solution avec le maillage le plus fin (pour MNP)
@@ -161,35 +160,11 @@ spline_bicubic_Centree = sp.interpolate.RectBivariateSpline(t_fine_mesh, r_fine_
 # ----------------------------------------------------------------------------------------
 #          Schéma 2 : Discretisation d'ordre 1 en temps et 2 en espace étude ordre spatial
 # ----------------------------------------------------------------------------------------
-# erreur_vect_L1_Centree = np.zeros(len(N_vect))
-# erreur_vect_L2_Centree = np.zeros(len(N_vect))
-# erreur_vect_L_inf_Centree = np.zeros(len(N_vect))
 
 plt.figure(2)
-# Objet_Etude_Convergence = Etude_Convergence(delta_r_vect, delta_t_vect, N_vect, R, critere_convergence, critere_max_iter, 2, sol_MNP_Centree.C[-1,:], spline_bicubic_Centree)
-# erreur_vect_L1_Centree, erreur_vect_L2_Centree, erreur_vect_L_inf_Centree = Objet_Etude_Convergence.Boucle_iterations()
+
 Objet_Etude_Convergence = Etude_Convergence_MMS_spatial(delta_r_vect, delta_t_MMS, N_vect, R, t_final, 2)
-erreur_vect_L1_Centree, erreur_vect_L2_Centree, erreur_vect_L_inf_Centree = Objet_Etude_Convergence.Boucle_iterations()
-Erreur_matrice = Objet_Etude_Convergence.Erreur_matrice
-# for i in range(len(N_vect)):
-#     # print("i: ", i)
-#     # Resolution
-#     Objet_Concentration = Profil_Concentration_Centree(delta_r_vect[i], delta_t_vect[i], N_vect[i], R, critere_convergence, critere_max_iter)
-#     Objet_Concentration.Algorithme_Resolution()
-
-#     # Plot
-#     Objet_Graphique = Plot_Concentration(Objet_Concentration.C, N_vect[i])
-#     Objet_Graphique.Plot_Numerique()
-#     Objet_Graphique.Plot_Exact()
-#     Objet_Graphique.Save_plot("schema2_"+str(N_vect[i]), "Comparaison de résultat deuxième schéma, "+str(N_vect[i])+" noeuds")
-    
-#     # Erreur
-#     Objet_Norme_Erreur = Norme_Erreur_Discretisation(Objet_Graphique.C_exact, Objet_Concentration.C[-1,:])
-#     erreur_vect_L1_Centree[i], erreur_vect_L2_Centree[i], erreur_vect_L_inf_Centree[i] = Objet_Norme_Erreur.Calcul_Norme()
-
-#     del Objet_Concentration
-#     del Objet_Graphique
-    
+erreur_vect_L1_Centree, erreur_vect_L2_Centree, erreur_vect_L_inf_Centree = Objet_Etude_Convergence.Boucle_iterations()    
 
 plt.figure(3)
 
@@ -213,7 +188,7 @@ plt.loglog(delta_r_vect, fit_function(delta_r_vect), linestyle='--', color='r')
 
 # Afficher l'équation de la régression en loi de puissance pour la norme L1
 equation_text = f'$L_1 = {np.exp(constant_logreg):.4f} \\times Δr^{{{exponent_logreg:.4f}}}$'
-equation_text_obj = plt.text(0.05, 0.05, equation_text, fontsize=12, transform=plt.gca().transAxes, color='k')
+equation_text_obj = plt.text(0.5, 0.05, equation_text, fontsize=12, transform=plt.gca().transAxes, color='k')
 
 # Graphique log-log norme de l'erreur L2 vs delta_r
 plt.loglog(delta_r_vect, erreur_vect_L2_Centree, '.g', label = "Nomre L2")
@@ -235,7 +210,7 @@ plt.loglog(delta_r_vect, fit_function(delta_r_vect), linestyle='--', color='g')
 
 # Afficher l'équation de la régression en loi de puissance pour la norme L2
 equation_text = f'$L_2 = {np.exp(constant_logreg):.4f} \\times Δr^{{{exponent_logreg:.4f}}}$'
-equation_text_obj = plt.text(0.05, 0.15, equation_text, fontsize=12, transform=plt.gca().transAxes, color='k')
+equation_text_obj = plt.text(0.5, 0.15, equation_text, fontsize=12, transform=plt.gca().transAxes, color='k')
 
 # Graphique log-log norme de l'erreur Linf vs delta_r
 plt.loglog(delta_r_vect, erreur_vect_L_inf_Centree, '.m', label = "Norme $L_\infty$")
@@ -256,15 +231,16 @@ extrapolated_value = fit_function(delta_r_vect[-1])
 plt.loglog(delta_r_vect, fit_function(delta_r_vect), linestyle='--', color='m')
 
 # Afficher l'équation de la régression en loi de puissance pour la norme Linf
-equation_text = f'$Linf = {np.exp(constant_logreg):.4f} \\times Δr^{{{exponent_logreg:.4f}}}$'
-equation_text_obj = plt.text(0.05, 0.25, equation_text, fontsize=12, transform=plt.gca().transAxes, color='k')
+equation_text = f'$L_\infty = {np.exp(constant_logreg):.4f} \\times Δr^{{{exponent_logreg:.4f}}}$'
+equation_text_obj = plt.text(0.5, 0.25, equation_text, fontsize=12, transform=plt.gca().transAxes, color='k')
 
-plt.xlabel("delta_r")
-plt.ylabel("erreur L_inf")
+
+plt.xlabel("$\Delta$r")
+plt.ylabel("Norme de l'erreur")
 plt.legend()
 plt.grid()
-plt.title("Normes des erreurs L1, L2 et $L_\infty$ schéma d'ordre 2 en fonction de N")
-#plt.savefig("Norme_des_erreurs_Schema_2.png")
+plt.title("Normes des erreurs L1, L2 et $L_\infty$ avec schéma d'ordre 2 en \n fonction de $\Delta$r avec méthode MMS")
+plt.savefig("Norme_des_erreurs_Schema_2_MMS_Spatial.png")
 plt.show()
 
 # ----------------------------------------------------------------------------------------
@@ -273,12 +249,10 @@ plt.show()
 
 plt.figure(4)
 
-# Objet_Etude_Convergence = Etude_Convergence(delta_r_vect, delta_t_vect, N_vect, R, critere_convergence, critere_max_iter, 1, sol_MNP.C[-1,:], spline_bicubic)
-delta_t_vect = np.array([0.1, 0.05, 0.025, 0.01])
+delta_t_vect = np.array([0.05, 0.025, 0.01, 0.005, 0.001])
 t_final = 1.0
 Objet_Etude_Convergence = Etude_Convergence_MMS_temporel(delta_r, delta_t_vect, N, R, t_final, 1)
 erreur_vect_L1, erreur_vect_L2, erreur_vect_L_inf = Objet_Etude_Convergence.Boucle_iterations()
-Erreur_matrice = Objet_Etude_Convergence.Erreur_matrice
 
 plt.figure(5)
 
@@ -348,47 +322,23 @@ plt.loglog(delta_t_vect, fit_function(delta_t_vect), linestyle='--', color='m')
 equation_text = f'$L_\infty = {np.exp(constant_logreg):.4f} \\times Δr^{{{exponent_logreg:.4f}}}$'
 equation_text_obj = plt.text(0.5, 0.25, equation_text, fontsize=12, transform=plt.gca().transAxes, color='k')
 
-plt.xlabel("delta_t")
+plt.xlabel("$\Delta$t")
 plt.ylabel("Norme de l'erreur")
 plt.legend()
 plt.grid()
-plt.title("Normes des erreurs L1, L2 et $L_\infty$ schéma d'ordre 1 en fonction de delta_t")
-#plt.savefig("Norme_des_erreurs_Schema_1.png")
+plt.title("Normes des erreurs L1, L2 et $L_\infty$ avec schéma d'ordre 1 en \n fonction de $\Delta$t avec méthode MMS")
+plt.savefig("Norme_des_erreurs_Schema_1_MMS_Temp.png")
 plt.show()
 
 #%%
 # ----------------------------------------------------------------------------------------
 #          Schéma 2 : Discretisation d'ordre 1 en temps et 2 en espace étude ordre temporel
 # ----------------------------------------------------------------------------------------
-# erreur_vect_L1_Centree = np.zeros(len(N_vect))
-# erreur_vect_L2_Centree = np.zeros(len(N_vect))
-# erreur_vect_L_inf_Centree = np.zeros(len(N_vect))
 
 plt.figure(6)
-# Objet_Etude_Convergence = Etude_Convergence(delta_r_vect, delta_t_vect, N_vect, R, critere_convergence, critere_max_iter, 2, sol_MNP_Centree.C[-1,:], spline_bicubic_Centree)
-# erreur_vect_L1_Centree, erreur_vect_L2_Centree, erreur_vect_L_inf_Centree = Objet_Etude_Convergence.Boucle_iterations()
+
 Objet_Etude_Convergence = Etude_Convergence_MMS_temporel(delta_r, delta_t_vect, N, R, t_final, 2)
-erreur_vect_L1_Centree, erreur_vect_L2_Centree, erreur_vect_L_inf_Centree = Objet_Etude_Convergence.Boucle_iterations()
-Erreur_matrice = Objet_Etude_Convergence.Erreur_matrice
-# for i in range(len(N_vect)):
-#     # print("i: ", i)
-#     # Resolution
-#     Objet_Concentration = Profil_Concentration_Centree(delta_r_vect[i], delta_t_vect[i], N_vect[i], R, critere_convergence, critere_max_iter)
-#     Objet_Concentration.Algorithme_Resolution()
-
-#     # Plot
-#     Objet_Graphique = Plot_Concentration(Objet_Concentration.C, N_vect[i])
-#     Objet_Graphique.Plot_Numerique()
-#     Objet_Graphique.Plot_Exact()
-#     Objet_Graphique.Save_plot("schema2_"+str(N_vect[i]), "Comparaison de résultat deuxième schéma, "+str(N_vect[i])+" noeuds")
-    
-#     # Erreur
-#     Objet_Norme_Erreur = Norme_Erreur_Discretisation(Objet_Graphique.C_exact, Objet_Concentration.C[-1,:])
-#     erreur_vect_L1_Centree[i], erreur_vect_L2_Centree[i], erreur_vect_L_inf_Centree[i] = Objet_Norme_Erreur.Calcul_Norme()
-
-#     del Objet_Concentration
-#     del Objet_Graphique
-    
+erreur_vect_L1_Centree, erreur_vect_L2_Centree, erreur_vect_L_inf_Centree = Objet_Etude_Convergence.Boucle_iterations()    
 
 plt.figure(7)
 
@@ -412,7 +362,7 @@ plt.loglog(delta_t_vect, fit_function(delta_t_vect), linestyle='--', color='r')
 
 # Afficher l'équation de la régression en loi de puissance pour la norme L1
 equation_text = f'$L_1 = {np.exp(constant_logreg):.4f} \\times Δr^{{{exponent_logreg:.4f}}}$'
-equation_text_obj = plt.text(0.05, 0.05, equation_text, fontsize=12, transform=plt.gca().transAxes, color='k')
+equation_text_obj = plt.text(0.5, 0.05, equation_text, fontsize=12, transform=plt.gca().transAxes, color='k')
 
 # Graphique log-log norme de l'erreur L2 vs delta_t
 plt.loglog(delta_t_vect, erreur_vect_L2_Centree, '.g', label = "Nomre L2")
@@ -434,7 +384,7 @@ plt.loglog(delta_t_vect, fit_function(delta_t_vect), linestyle='--', color='g')
 
 # Afficher l'équation de la régression en loi de puissance pour la norme L2
 equation_text = f'$L_2 = {np.exp(constant_logreg):.4f} \\times Δr^{{{exponent_logreg:.4f}}}$'
-equation_text_obj = plt.text(0.05, 0.15, equation_text, fontsize=12, transform=plt.gca().transAxes, color='k')
+equation_text_obj = plt.text(0.5, 0.15, equation_text, fontsize=12, transform=plt.gca().transAxes, color='k')
 
 # Graphique log-log norme de l'erreur Linf vs delta_t
 plt.loglog(delta_t_vect, erreur_vect_L_inf_Centree, '.m', label = "Norme $L_\infty$")
@@ -455,17 +405,16 @@ extrapolated_value = fit_function(delta_t_vect[-1])
 plt.loglog(delta_t_vect, fit_function(delta_t_vect), linestyle='--', color='m')
 
 # Afficher l'équation de la régression en loi de puissance pour la norme Linf
-equation_text = f'$Linf = {np.exp(constant_logreg):.4f} \\times Δr^{{{exponent_logreg:.4f}}}$'
-equation_text_obj = plt.text(0.05, 0.25, equation_text, fontsize=12, transform=plt.gca().transAxes, color='k')
+equation_text = f'$L_\infty = {np.exp(constant_logreg):.4f} \\times Δr^{{{exponent_logreg:.4f}}}$'
+equation_text_obj = plt.text(0.5, 0.25, equation_text, fontsize=12, transform=plt.gca().transAxes, color='k')
 
-plt.xlabel("delta_t")
-plt.ylabel("erreur L_inf")
+plt.xlabel("$\Delta$t")
+plt.ylabel("Norme de l'erreur")
 plt.legend()
 plt.grid()
-plt.title("Normes des erreurs L1, L2 et $L_\infty$ schéma d'ordre 2 en fonction de delta_t")
-#plt.savefig("Norme_des_erreurs_Schema_2.png")
+plt.title("Normes des erreurs L1, L2 et $L_\infty$ avec schéma d'ordre 2 en \n fonction de $\Delta$t avec méthode MMS")
+plt.savefig("Norme_des_erreurs_Schema_2_MMS_Temp.png")
 plt.show()
-
 
 
 
