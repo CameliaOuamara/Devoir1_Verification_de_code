@@ -24,7 +24,7 @@ class MMS():
     def __init__(self):
         Ce = 12
         R = 0.5
-        D = 10**-10
+        D = 1
         k = 4*10**-9
 
         r, t = sy.symbols('r t')

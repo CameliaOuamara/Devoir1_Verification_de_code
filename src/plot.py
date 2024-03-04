@@ -30,12 +30,12 @@ class Plot_Concentration():
         #     plt.scatter(self.r, self.C[i, :], label='i=%d'%i)
 
         plt.plot(self.r, self.C[-1, :], '.r', label = 'Solution numérique N=%d'%self.N)  
-        plt.legend()
-        plt.title('Convergence concentration')
+        #plt.legend()
+        plt.title('Etude de convergence concentration')
         plt.grid()
         
     def Plot_Exact(self):
-        plt.plot(self.r, self.C_exact, label='Solution exacte')
+        plt.plot(self.r, self.C_exact)
         
     def Save_plot(self,fileName,plotTitle):
         plt.grid()

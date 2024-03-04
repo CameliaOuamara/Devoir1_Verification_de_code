@@ -26,6 +26,8 @@ class Etude_Convergence():
         self.t_final = 0
         self.T_final = T_final
         self.Classe = Classe
+        
+        self.C_exact = 0
 
 
         
@@ -41,7 +43,7 @@ class Etude_Convergence():
             if self.Classe == 'MMS':
                 # Solution mms
                 Classe = MMS()
-                r_vecteur = np.linspace(0,self.R, self.delta_r_vect[i])
+                r_vecteur = np.linspace(0,self.R, self.N_vect[i])
                 self.C_exact = Classe.C(r_vecteur, self.T_final)
             else :
                 data = pd.read_csv('Comsol_results_%d.txt' %self.N_vect[i],sep='\s+',header=None)
@@ -53,21 +55,22 @@ class Etude_Convergence():
 
             # Resolution
             if self.schema==1:
-                Objet_Concentration = Profil_Concentration(self.delta_r_vect[i], self.delta_t_vect[i], self.N_vect[i], self.R, self.critere_convergence, self.critere_max_iter, self.T_final, self.Classe)
+                Objet_Concentration = Profil_Concentration(self.delta_r_vect[i], self.delta_t_vect[i], self.N_vect[i], self.R, self.critere_convergence, self.critere_max_iter, self.T_final, self.Classe, self.schema)
             elif self.schema == 2:
-                Objet_Concentration = Profil_Concentration_Centree(self.delta_r_vect[i], self.delta_t_vect[i], self.N_vect[i], self.R, self.critere_convergence, self.critere_max_iter, self.T_final, self.Classe)
+                Objet_Concentration = Profil_Concentration_Centree(self.delta_r_vect[i], self.delta_t_vect[i], self.N_vect[i], self.R, self.critere_convergence, self.critere_max_iter, self.T_final, self.Classe, self.schema)
             Objet_Concentration.Algorithme_Resolution()
             self.t_final = Objet_Concentration.t
 
             # Plot
             Objet_Graphique = Plot_Concentration(Objet_Concentration.C, self.N_vect[i], self.T_final, self.C_exact)
-            #Objet_Graphique.Plot_Numerique()
+            Objet_Graphique.Plot_Numerique()
             #Objet_Graphique.Plot_Exact()
             #Objet_Graphique.Save_plot("schema1_"+str(N_vect[i]), "Comparaison de résultat premier schéma, "+str(N_vect[i])+" noeuds")
             #Objet_Graphique.Save_plot(outputFolder+"schema_%d_%d"%(self.schema,self.N_vect[i]), "Comparaison de résultat schéma %d ,%d noeuds"%(self.schema, self.N_vect[i]))
             
             # Erreur
-            Objet_Norme_Erreur = Norme_Erreur_Discretisation(Objet_Graphique.C_exact, Objet_Concentration.C[-1,:])
+            # Objet_Norme_Erreur = Norme_Erreur_Discretisation(Objet_Graphique.C_exact, Objet_Concentration.C[-1,:])
+            Objet_Norme_Erreur = Norme_Erreur_Discretisation(self.C_exact, Objet_Concentration.C[-1,:])
             erreur_vect_L1[i], erreur_vect_L2[i], erreur_vect_L_inf[i] = Objet_Norme_Erreur.Calcul_Norme()
 
             del Objet_Concentration

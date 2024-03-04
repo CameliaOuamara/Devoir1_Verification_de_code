@@ -13,7 +13,7 @@ from Classes_Termes_Sources import *
 
 class Profil_Concentration:
 
-    def __init__(self, delta_r, delta_t, N, R, critere_conv,critere_max_iter, t_final, Classe):
+    def __init__(self, delta_r, delta_t, N, R, critere_conv,critere_max_iter, t_final, Classe, schema):
         """
         Parameters
         ----------
@@ -40,10 +40,12 @@ class Profil_Concentration:
         self.R = R
         self.t_final = t_final
         self.Classe = Classe
+        self.schema = schema
         
         # Données :
         self.Ce = 12 # [mol/m3]
-        self.Deff = 10**-10 # [m2/s]
+        # self.Deff = 10**-10 # [m2/s]
+        self.Deff = 1        # [m2/s]
         self.S = 8*10**-9 # [mol/m3/s]
         self.k = 4*10**-9 # []
         
@@ -93,7 +95,7 @@ class Profil_Concentration:
         """
         
         self.B = sp.lil_matrix((self.N, 1))
-        
+        #t_simulation = self.t_final
         # Recuperation du terme source et conditions limites
         if self.Classe == 'MMS':
             Classe = MMS()
@@ -112,7 +114,10 @@ class Profil_Concentration:
             for i in range(1,self.N-1):
                 self.B[i,0] = - self.e * C_t[i] + S
         
-        self.B[0,0]  = dCdr_r0  # 0.0 
+        if self.schema == 1:
+            self.B[0,0]  = dCdr_r0 *self.Delta_r # 0.0 
+        elif self.schema == 2:
+            self.B[0,0]  = dCdr_r0 *2*self.Delta_r # 0.0
         self.B[-1,0] = C_rR     # self.Ce
         
         self.B = self.B.tocsc()

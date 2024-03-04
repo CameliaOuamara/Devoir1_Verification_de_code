@@ -23,49 +23,31 @@ from plot import *
 from norme_erreur_discretisation import *
 from etude_convergence import *
 
-# -----------------------------------------------------------------------------------------------------------------
-#                                 Extraction solution COMSOL
-# -----------------------------------------------------------------------------------------------------------------
 
-# Solution Comsol
-
-data = pd.read_csv('Comsol_results.txt',sep='\s+',header=None)
-data = pd.DataFrame(data)
-
-x_Comsol = data[0]
-y_Comsol = data[1]
 
 # -----------------------------------------------------------------------------------------------------------------
 #                                               Debut du code
 # -----------------------------------------------------------------------------------------------------------------
-
-# Données 
-R = 0.5                                              # Rayon du cylindre [m]
-N = 100                                              # Nombre de points de discretisation [-]
-Ce = 12
-D_eff = 1.0e-10                                      # Coefficient de diffusion effectif [m2/s]
+R = 0.5                                 # Coefficient de diffusion effectif [m2/s]
 outputFolder = "y:\DOCuments\Verification et validation\Devoir1_Verification_de_code"
-
-# Solution MMS
-Terme_Source = 0
-CL_R = Ce
 
 # Critere de convergence
 critere_convergence = 1.0e-14                        # Critere sur la valeur de la concentration a l'iteration i vs i-1
 critere_max_iter = 100                               # Nombre minimum d'iterations a realiser pour la convergence vers le regime permanent
-N_vect = np.arange(5,10,1, dtype=int)
+N_vect = np.arange(5,8,1, dtype=int)
 N_vect = 5 * 2**N_vect
 delta_r_vect = R/(N_vect-1)                          # Vecteur Delta r correspondant au vecteur N precedent
 
 # Le pas de temps va prendre les valeurs de : [2*10**12->5*10**12]
-delta_t_values = np.linspace(1,5,10)
-delta_t_values = delta_t_values*10**12
+delta_t_values = np.linspace(0.005,0.1,5)
+#delta_t_values = delta_t_values*10**5
 
 # Variation du pas de temps et d'espace. Pour chaque pas de temps, faire varier le pas d'espace
 # On impose le temps final de la simulation
-t_final = 9*10**12
+# t_final = 5*10**13
+t_final =10
 
-Classe = 'MMS'
+Classe_name = 'MMS'
 
 # Solution mms
 Classe = MMS()
@@ -84,11 +66,12 @@ L2_matrix = np.zeros((len(delta_t_values),len(delta_r_vect)))
 Linf_matrix = np.zeros((len(delta_t_values),len(delta_r_vect)))
 
 for j in range(len(delta_t_values)):
+    plt.figure()
     # Le vecteur delta_t_vec est juste utilisé pour utiliser le meme delta_t pendant qu'on fait varier delta_r
     delta_t_vect = np.ones(len(delta_r_vect))*delta_t_values[j]
 
     # Solution numerique    
-    Objet_Etude_Convergence = Etude_Convergence(delta_r_vect, delta_t_vect, N_vect, R, critere_convergence, critere_max_iter, 1, t_final, Classe)
+    Objet_Etude_Convergence = Etude_Convergence(delta_r_vect, delta_t_vect, N_vect, R, critere_convergence, critere_max_iter, 1, t_final, Classe_name)
     
     # Calcul de l'erreur
     erreur_vect_L1, erreur_vect_L2, erreur_vect_L_inf = Objet_Etude_Convergence.Boucle_iterations(outputFolder)
@@ -96,9 +79,17 @@ for j in range(len(delta_t_values)):
     L2_matrix[j,:] = erreur_vect_L2
     Linf_matrix[j,:] = erreur_vect_L_inf
     
-L1_double_integrale = np.mean(L1_matrix, axis=0)
-L2_double_integrale = np.mean(L2_matrix, axis=0)
-Linf_double_integrale = np.mean(Linf_matrix, axis=0)
+    plt.plot(r_vecteur, C_exact, label="MMS")
+    plt.legend()
+    plt.grid()
+    plt.show()
+    
+# L1_double_integrale = np.mean(L1_matrix, axis=0)
+# L2_double_integrale = np.mean(L2_matrix, axis=0)
+# Linf_double_integrale = np.mean(Linf_matrix, axis=0)
+L1_double_integrale = L1_matrix[0,:]
+L2_double_integrale = L2_matrix[0,:]
+Linf_double_integrale = Linf_matrix[0,:]
 
 # Plot solution Comsol
 # plt.plot(x_Comsol,y_Comsol, label="Solution Comsol")
@@ -106,9 +97,9 @@ Linf_double_integrale = np.mean(Linf_matrix, axis=0)
 # plt.plot(r_vecteur, C_MMS, label="MMS")
 # plt.legend()
 # plt.grid()
-# plt.show()
+#plt.show()
 
-plt.figure(0)
+plt.figure(1)
 
 # Graphique log-log norme de l'erreur L1 vs delta_r
 plt.loglog(delta_r_vect, L1_double_integrale, '.r', label = "Norme L1")
@@ -185,7 +176,7 @@ plt.title("Normes des erreurs L1, L2 et $L_\infty$ schéma d'ordre 1 en fonction
 plt.show()
 
 
-# ----------------------------------------------------------------------------------------
+#%% ----------------------------------------------------------------------------------------
 #          Schéma 2 : Discretisation d'ordre 1 en temps et 2 en espace
 # ----------------------------------------------------------------------------------------
 erreur_vect_L1_Centree = np.zeros(len(N_vect))
@@ -196,24 +187,27 @@ L1_matrix = np.zeros((len(delta_t_values),len(delta_r_vect)))
 L2_matrix = np.zeros((len(delta_t_values),len(delta_r_vect)))
 Linf_matrix = np.zeros((len(delta_t_values),len(delta_r_vect)))
 
+plt.figure(2)
+
 for j in range(len(delta_t_values)):
     # Le vecteur delta_t_vec est juste utilisé pour utiliser le meme delta_t pendant qu'on fait varier delta_r
     delta_t_vect = np.ones(len(delta_r_vect))*delta_t_values[j]
 
     # Solution numerique    
-    Objet_Etude_Convergence = Etude_Convergence(delta_r_vect, delta_t_vect, N_vect, R, critere_convergence, critere_max_iter, 2, t_final, Classe)
+    Objet_Etude_Convergence = Etude_Convergence(delta_r_vect, delta_t_vect, N_vect, R, critere_convergence, critere_max_iter, 2, t_final, Classe_name)
     
     # Calcul de l'erreur
     erreur_vect_L1_Centree, erreur_vect_L2_Centree, erreur_vect_L_inf_Centree = Objet_Etude_Convergence.Boucle_iterations(outputFolder)
     L1_matrix[j,:] = erreur_vect_L1_Centree
     L2_matrix[j,:] = erreur_vect_L2_Centree
     Linf_matrix[j,:] = erreur_vect_L_inf_Centree
-    
+plt.show()
+ 
 L1_double_integrale = np.mean(L1_matrix, axis=0)
 L2_double_integrale = np.mean(L2_matrix, axis=0)
 Linf_double_integrale = np.mean(Linf_matrix, axis=0)
 
-plt.figure(1)
+plt.figure(3)
 
 # Graphique log-log norme de l'erreur L1 vs delta_r
 plt.loglog(delta_r_vect, L1_double_integrale, '.r', label = "Norme L1")
