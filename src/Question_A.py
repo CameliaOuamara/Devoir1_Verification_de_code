@@ -1,14 +1,6 @@
+# -*- coding: utf-8 -*-
 """
-------------------------------------------------------------------------------------------------------------------
-MEC-8811 Vérification et Validation en Modélisation Numrérique
-Devoir 1
-------------------------------------------------------------------------------------------------------------------
-
-Ce code utilise la methode des differences finies dans le but de resoudre un probleme de diffusion.
-Le probleme étudié ici est le processus de diffusion du sel dans un pilier de béton poreux.
-L'équation à résoudre est l'équation de Fick.
-Le code resout le cas transitoire et permet d'atteindre le regime permanent.
-
+Question A) Comparaison code a code
 """
 
 # Libraries
@@ -23,20 +15,10 @@ from plot import *
 from norme_erreur_discretisation import *
 from etude_convergence import *
 
-# -----------------------------------------------------------------------------------------------------------------
-#                                 Extraction solution COMSOL
-# -----------------------------------------------------------------------------------------------------------------
 
-# Solution Comsol
-
-data = pd.read_csv('Comsol_results.txt',sep='\s+',header=None)
-data = pd.DataFrame(data)
-
-x_Comsol = data[0]
-y_Comsol = data[1]
 
 # -----------------------------------------------------------------------------------------------------------------
-#                                               Debut du code
+#                                 Solutions numerique
 # -----------------------------------------------------------------------------------------------------------------
 
 # Données 
@@ -46,10 +28,6 @@ Ce = 12
 D_eff = 1.0e-10                                      # Coefficient de diffusion effectif [m2/s]
 outputFolder = "y:\DOCuments\Verification et validation\Devoir1_Verification_de_code"
 
-# Solution MMS
-Terme_Source = 0
-CL_R = Ce
-
 # Critere de convergence
 critere_convergence = 1.0e-14                        # Critere sur la valeur de la concentration a l'iteration i vs i-1
 critere_max_iter = 100                               # Nombre minimum d'iterations a realiser pour la convergence vers le regime permanent
@@ -58,19 +36,14 @@ N_vect = 5 * 2**N_vect
 delta_r_vect = R/(N_vect-1)                          # Vecteur Delta r correspondant au vecteur N precedent
 
 # Le pas de temps va prendre les valeurs de : [2*10**12->5*10**12]
-delta_t_values = np.linspace(1,5,10)
+delta_t_values = np.linspace(0.1,4,10)
 delta_t_values = delta_t_values*10**12
 
 # Variation du pas de temps et d'espace. Pour chaque pas de temps, faire varier le pas d'espace
 # On impose le temps final de la simulation
-t_final = 9*10**12
+t_final = 5*10**13
 
-Classe = 'MMS'
-
-# Solution mms
-Classe = MMS()
-r_vecteur = np.linspace(0, R, 100)
-C_exact = Classe.C(r_vecteur, t_final)
+Classe = 'Fick'
 
 # ----------------------------------------------------------------------------------------
 #          Schéma 1 : Discretisation d'ordre 1 en temps et 1 en espace
@@ -99,14 +72,6 @@ for j in range(len(delta_t_values)):
 L1_double_integrale = np.mean(L1_matrix, axis=0)
 L2_double_integrale = np.mean(L2_matrix, axis=0)
 Linf_double_integrale = np.mean(Linf_matrix, axis=0)
-
-# Plot solution Comsol
-# plt.plot(x_Comsol,y_Comsol, label="Solution Comsol")
-
-# plt.plot(r_vecteur, C_MMS, label="MMS")
-# plt.legend()
-# plt.grid()
-# plt.show()
 
 plt.figure(0)
 
@@ -288,6 +253,30 @@ plt.grid()
 plt.title("Normes des erreurs L1, L2 et $L_\infty$ schéma d'ordre 2 en fonction de $\Delta r$")
 #plt.savefig(outputFolder+"Norme_des_erreurs_Schema_2.png")
 plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

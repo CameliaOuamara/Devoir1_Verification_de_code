@@ -5,9 +5,10 @@ Trace le profil de concentration analytique du probleme
 """
 import numpy as np
 import matplotlib.pyplot as plt
+from Classes_Termes_Sources import *
 
 class Plot_Concentration():
-    def __init__(self, C, N):
+    def __init__(self, C, N, t_final, C_exact):
         # Entrées :
         self.N = N
         self.C = C
@@ -20,7 +21,8 @@ class Plot_Concentration():
         
         self.r = np.linspace(0, self.R, self.N)
         
-        self.C_exact = (0.25*self.S*self.R**2*(self.r**2/self.R**2-1)/self.Deff + self.Ce)
+        #self.C_exact = (0.25*self.S*self.R**2*(self.r**2/self.R**2-1)/self.Deff + self.Ce)
+        self.C_exact = C_exact
         
     def Plot_Numerique(self):
         

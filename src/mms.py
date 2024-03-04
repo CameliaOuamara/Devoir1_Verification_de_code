@@ -7,7 +7,7 @@ Created on Sat Mar  2 21:04:08 2024
 
 # Libraries
 import numpy as np
-import sympy as sp
+import sympy as sy
 
 # Functions
 # from profil_concentration import *
@@ -20,22 +20,22 @@ R = 0.5
 D = 10**-10
 k = 4*10**-9
 
-r, t = sp.symbols('r t')
+r, t = sy.symbols('r t')
 
 # Solution mms
-C_MMS = Ce * sp.sin(t) * sp.sin(sp.pi*r/R)
+C_MMS = Ce * sy.sin(t) * sy.sin(sy.pi*r/R)
 
 # Derivées
-dCdt   = sp.diff(C_MMS, t)
-dCdr   = sp.diff(C_MMS, r)
-d2Cdr2 = sp.diff(sp.diff(C_MMS, r), r)
+dCdt   = sy.diff(C_MMS, t)
+dCdr   = sy.diff(C_MMS, r)
+d2Cdr2 = sy.diff(sy.diff(C_MMS, r), r)
 
 # Terme source
 S_MMS = D*d2Cdr2 + D*dCdr/r - k*C_MMS - dCdt
 
 # Callable functions
-C =  sp.lambdify([r, t], C_MMS, "numpy")
-S =  sp.lambdify([r, t], S_MMS, "numpy")
+C =  sy.lambdify([r, t], C_MMS, "numpy")
+S =  sy.lambdify([r, t], S_MMS, "numpy")
 
 
 

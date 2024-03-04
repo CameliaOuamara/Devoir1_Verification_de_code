@@ -7,6 +7,7 @@ La classe calcule la solution numerique du probleme pour plusieurs discretisatio
 # Libraries
 import numpy as np
 import matplotlib.pyplot as plt
+import pandas as pd
 
 # Functions
 from profil_concentration import *
@@ -14,7 +15,7 @@ from plot import *
 from norme_erreur_discretisation import *
 
 class Etude_Convergence():
-    def __init__(self, delta_r_vect, delta_t_vect, N_vect, R, critere_convergence, critere_max_iter, schema):
+    def __init__(self, delta_r_vect, delta_t_vect, N_vect, R, critere_convergence, critere_max_iter, schema, T_final, Classe):
         self.delta_r_vect = delta_r_vect
         self.delta_t_vect = delta_t_vect
         self.N_vect = N_vect
@@ -22,6 +23,10 @@ class Etude_Convergence():
         self.critere_convergence = critere_convergence
         self.critere_max_iter = critere_max_iter
         self.schema = schema
+        self.t_final = 0
+        self.T_final = T_final
+        self.Classe = Classe
+
 
         
     def Boucle_iterations(self,outputFolder):
@@ -32,16 +37,31 @@ class Etude_Convergence():
         
         for i in range(len(self.N_vect)):
 
+            # Solution exacte
+            if self.Classe == 'MMS':
+                # Solution mms
+                Classe = MMS()
+                r_vecteur = np.linspace(0,self.R, self.delta_r_vect[i])
+                self.C_exact = Classe.C(r_vecteur, self.T_final)
+            else :
+                data = pd.read_csv('Comsol_results_%d.txt' %self.N_vect[i],sep='\s+',header=None)
+                data = pd.DataFrame(data)
+
+                y_Comsol = data[1]
+                
+                self.C_exact = y_Comsol
+
             # Resolution
             if self.schema==1:
-                Objet_Concentration = Profil_Concentration(self.delta_r_vect[i], self.delta_t_vect[i], self.N_vect[i], self.R, self.critere_convergence, self.critere_max_iter)
+                Objet_Concentration = Profil_Concentration(self.delta_r_vect[i], self.delta_t_vect[i], self.N_vect[i], self.R, self.critere_convergence, self.critere_max_iter, self.T_final, self.Classe)
             elif self.schema == 2:
-                Objet_Concentration = Profil_Concentration_Centree(self.delta_r_vect[i], self.delta_t_vect[i], self.N_vect[i], self.R, self.critere_convergence, self.critere_max_iter)
+                Objet_Concentration = Profil_Concentration_Centree(self.delta_r_vect[i], self.delta_t_vect[i], self.N_vect[i], self.R, self.critere_convergence, self.critere_max_iter, self.T_final, self.Classe)
             Objet_Concentration.Algorithme_Resolution()
+            self.t_final = Objet_Concentration.t
 
             # Plot
-            Objet_Graphique = Plot_Concentration(Objet_Concentration.C, self.N_vect[i])
-            Objet_Graphique.Plot_Numerique()
+            Objet_Graphique = Plot_Concentration(Objet_Concentration.C, self.N_vect[i], self.T_final, self.C_exact)
+            #Objet_Graphique.Plot_Numerique()
             #Objet_Graphique.Plot_Exact()
             #Objet_Graphique.Save_plot("schema1_"+str(N_vect[i]), "Comparaison de résultat premier schéma, "+str(N_vect[i])+" noeuds")
             #Objet_Graphique.Save_plot(outputFolder+"schema_%d_%d"%(self.schema,self.N_vect[i]), "Comparaison de résultat schéma %d ,%d noeuds"%(self.schema, self.N_vect[i]))
