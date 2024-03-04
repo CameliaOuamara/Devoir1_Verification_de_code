@@ -275,7 +275,7 @@ extrapolated_value = fit_function(delta_t_vect[-1])
 plt.loglog(delta_t_vect, fit_function(delta_t_vect), linestyle='--', color='r')
 
 # Afficher l'équation de la régression en loi de puissance pour la norme L1
-equation_text = f'$L_1 = {np.exp(constant_logreg):.4f} \\times Δr^{{{exponent_logreg:.4f}}}$'
+equation_text = f'$L_1 = {np.exp(constant_logreg):.4f} \\times Δt^{{{exponent_logreg:.4f}}}$'
 equation_text_obj = plt.text(0.5, 0.05, equation_text, fontsize=12, transform=plt.gca().transAxes, color='k')
 
 # Graphique log-log norme de l'erreur L2 vs delta_t
@@ -297,7 +297,7 @@ extrapolated_value = fit_function(delta_t_vect[-1])
 plt.loglog(delta_t_vect, fit_function(delta_t_vect), linestyle='--', color='g')
 
 # Afficher l'équation de la régression en loi de puissance pour la norme L1
-equation_text = f'$L_2 = {np.exp(constant_logreg):.4f} \\times Δr^{{{exponent_logreg:.4f}}}$'
+equation_text = f'$L_2 = {np.exp(constant_logreg):.4f} \\times Δt^{{{exponent_logreg:.4f}}}$'
 equation_text_obj = plt.text(0.5, 0.15, equation_text, fontsize=12, transform=plt.gca().transAxes, color='k')
 
 # Graphique log-log norme de l'erreur Linf vs delta_t
@@ -319,7 +319,7 @@ extrapolated_value = fit_function(delta_t_vect[-1])
 plt.loglog(delta_t_vect, fit_function(delta_t_vect), linestyle='--', color='m')
 
 # Afficher l'équation de la régression en loi de puissance pour la norme Linf
-equation_text = f'$L_\infty = {np.exp(constant_logreg):.4f} \\times Δr^{{{exponent_logreg:.4f}}}$'
+equation_text = f'$L_\infty = {np.exp(constant_logreg):.4f} \\times Δt^{{{exponent_logreg:.4f}}}$'
 equation_text_obj = plt.text(0.5, 0.25, equation_text, fontsize=12, transform=plt.gca().transAxes, color='k')
 
 plt.xlabel("$\Delta$t")
@@ -361,7 +361,7 @@ extrapolated_value = fit_function(delta_t_vect[-1])
 plt.loglog(delta_t_vect, fit_function(delta_t_vect), linestyle='--', color='r')
 
 # Afficher l'équation de la régression en loi de puissance pour la norme L1
-equation_text = f'$L_1 = {np.exp(constant_logreg):.4f} \\times Δr^{{{exponent_logreg:.4f}}}$'
+equation_text = f'$L_1 = {np.exp(constant_logreg):.4f} \\times Δt^{{{exponent_logreg:.4f}}}$'
 equation_text_obj = plt.text(0.5, 0.05, equation_text, fontsize=12, transform=plt.gca().transAxes, color='k')
 
 # Graphique log-log norme de l'erreur L2 vs delta_t
@@ -383,7 +383,7 @@ extrapolated_value = fit_function(delta_t_vect[-1])
 plt.loglog(delta_t_vect, fit_function(delta_t_vect), linestyle='--', color='g')
 
 # Afficher l'équation de la régression en loi de puissance pour la norme L2
-equation_text = f'$L_2 = {np.exp(constant_logreg):.4f} \\times Δr^{{{exponent_logreg:.4f}}}$'
+equation_text = f'$L_2 = {np.exp(constant_logreg):.4f} \\times Δt^{{{exponent_logreg:.4f}}}$'
 equation_text_obj = plt.text(0.5, 0.15, equation_text, fontsize=12, transform=plt.gca().transAxes, color='k')
 
 # Graphique log-log norme de l'erreur Linf vs delta_t
@@ -405,7 +405,7 @@ extrapolated_value = fit_function(delta_t_vect[-1])
 plt.loglog(delta_t_vect, fit_function(delta_t_vect), linestyle='--', color='m')
 
 # Afficher l'équation de la régression en loi de puissance pour la norme Linf
-equation_text = f'$L_\infty = {np.exp(constant_logreg):.4f} \\times Δr^{{{exponent_logreg:.4f}}}$'
+equation_text = f'$L_\infty = {np.exp(constant_logreg):.4f} \\times Δt^{{{exponent_logreg:.4f}}}$'
 equation_text_obj = plt.text(0.5, 0.25, equation_text, fontsize=12, transform=plt.gca().transAxes, color='k')
 
 plt.xlabel("$\Delta$t")
