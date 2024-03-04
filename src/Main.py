@@ -22,11 +22,28 @@ from profil_concentration import *
 from plot import *
 from norme_erreur_discretisation import *
 from etude_convergence import *
+import time
+def compute_dummy_MMS_sol(t_fine_mesh,r_fine_mesh):
+    C_out = np.zeros((1, len(r_fine_mesh)))
+    for ri in range(0,len(r_fine_mesh)):
+        r = r_fine_mesh[ri]
+        tempval = np.exp(-1.0*0.0*(1.0/1.0e9))*(0.5*np.cos(r*2*np.pi/r_fine_mesh[-1]))+(np.cos(r*2*np.pi/r_fine_mesh[-1]))
+        C_out[0][ri]=tempval
+    for ti in range(1,len(t_fine_mesh)):
+        t = t_fine_mesh[ti]
+        t_arr_temp = np.zeros((1, len(r_fine_mesh)))
+        for ri in range(0,len(r_fine_mesh)):
+            r = r_fine_mesh[ri]
+            tempval = np.exp(-1.0*t*(1.0/1.0e9))*(0.5*np.cos(r*2*np.pi/r_fine_mesh[-1]))+(np.cos(r*2*np.pi/r_fine_mesh[-1]))
+            t_arr_temp[0][ri]=tempval
+        C_out=np.append(C_out,t_arr_temp,axis=0)
+    return C_out
+        
 
 # -----------------------------------------------------------------------------------------------------------------
 #                                               Debut du code
 # -----------------------------------------------------------------------------------------------------------------
-
+time_start = time.time()
 # Données 
 R = 0.5                                              # Rayon du cylindre [m]
 N = 100                                              # Nombre de points de discretisation [-]
@@ -39,13 +56,13 @@ delta_t = 0.5 * delta_r*delta_r / D_eff              # Pas de temps [s]
 
 # Critere de convergence
 critere_convergence = 1.0e-14                        # Critere sur la valeur de la concentration a l'iteration i vs i-1
-critere_max_iter = 400                              # Nombre minimum d'iterations a realiser pour la convergence vers le regime permanent
+critere_max_iter = 1000                              # Nombre minimum d'iterations a realiser pour la convergence vers le regime permanent
 
 # Étude convergence
-N_vect = np.arange(0,5,1, dtype=int)                 # Vecteur contenant les N utilisés dans l'étude de convergence
+N_vect = np.arange(0,7,1, dtype=int)                 # Vecteur contenant les N utilisés dans l'étude de convergence
 N_vect = 5 * 2**N_vect
 delta_r_vect = R/(N_vect-1)                          # Vecteur Delta r correspondant au vecteur N precedent
-delta_t_vect = 1.0e7 * 0.5 +0.0*delta_r_vect*delta_r_vect / D_eff # Vecteur Delta t correspondant au vecteur Delta r precedent
+delta_t_vect = 1.0e6 * 0.125 +0.0*delta_r_vect*delta_r_vect / D_eff # Vecteur Delta t correspondant au vecteur Delta r precedent
 print(delta_r_vect)
 print(delta_t_vect)
 # delta_t_vect = 0.5 * delta_r_vect*delta_r_vect / D_eff # Vecteur Delta t correspondant au vecteur Delta r precedent
@@ -148,13 +165,43 @@ plt.show()
 # -----------------------------------------------------------------------------------------------------------------
 #                           Solution avec le maillage le plus fin (pour MNP)
 # -----------------------------------------------------------------------------------------------------------------
-sol_MNP_Centree = Profil_Concentration_Centree(delta_r_vect[-1], delta_t_vect[-1], N_vect[-1], R, critere_convergence, critere_max_iter)
+sol_MNP_Centree = Profil_Concentration_Centree(delta_r_vect[-1], delta_t_vect[-1], N_vect[-3], R, critere_convergence, critere_max_iter)
 sol_MNP_Centree.Algorithme_Resolution()
 nb_time_step = sol_MNP_Centree.C.shape[0]
 r_fine_mesh = np.linspace(0, R, N_vect[-1])
 t_fine_mesh = np.linspace(0, delta_t_vect[-1]*(nb_time_step-1), nb_time_step)
-spline_bicubic_Centree = sp.interpolate.RectBivariateSpline(t_fine_mesh, r_fine_mesh, sol_MNP_Centree.C[:,:])
+C_dummy = compute_dummy_MMS_sol(t_fine_mesh,r_fine_mesh)
+#spline_bicubic_Centree = sp.interpolate.RectBivariateSpline(t_fine_mesh, r_fine_mesh, sol_MNP_Centree.C[:,:])
+spline_bicubic_Centree = sp.interpolate.RectBivariateSpline(t_fine_mesh, r_fine_mesh, C_dummy[:,:])
+'''
+print("BEGINNING TEST COMPARISON TABLE VS SPLINE VS FUNCTION")
 
+for ri in range(0,len(r_fine_mesh)):
+    for ti in range(0,len(t_fine_mesh)):
+        print("r")
+        print(r_fine_mesh[ri])
+        print("t")
+        print(t_fine_mesh[ti])
+        print("TABLE VALUE")
+        val_table = C_dummy[:,:][ti][ri]
+        print(val_table)
+        print("spline value")
+        val_spline = spline_bicubic_Centree(t_fine_mesh[ti],r_fine_mesh[ri])
+        print(val_spline)
+        print("function value")
+        val_func = np.exp(-1.0*t_fine_mesh[ti]*(1.0/1.0e9))*((r_fine_mesh[ri]-0.25)*(r_fine_mesh[ri]-0.25))
+        print(val_func)
+        print(val_func-val_spline)
+        if abs(val_func - val_spline)>1.0e-12:
+            print("WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW")
+        if abs(val_func - val_table) >1.0e-12:
+            print("________________________________________________________________________________")
+'''
+
+print("Time after spline MNP:")
+time_post_MNP_spline = time.time()
+
+print(time_post_MNP_spline-time_start)
 #%%
 # ----------------------------------------------------------------------------------------
 #          Schéma 2 : Discretisation d'ordre 1 en temps et 2 en espace
@@ -164,9 +211,14 @@ spline_bicubic_Centree = sp.interpolate.RectBivariateSpline(t_fine_mesh, r_fine_
 # erreur_vect_L_inf_Centree = np.zeros(len(N_vect))
 
 plt.figure(2)
-Objet_Etude_Convergence = Etude_Convergence(delta_r_vect, delta_t_vect, N_vect, R, critere_convergence, critere_max_iter, 2, sol_MNP_Centree.C[-1,:], spline_bicubic_Centree)
+Objet_Etude_Convergence = Etude_Convergence(delta_r_vect, delta_t_vect, N_vect, R, critere_convergence, critere_max_iter, 2, sol_MNP_Centree.C, spline_bicubic_Centree)
+time_post_crea_etude_convergence = time.time()
+print("Time after convergence etude cration:")
+print(time_post_crea_etude_convergence-time_start)
 erreur_vect_L1_Centree, erreur_vect_L2_Centree, erreur_vect_L_inf_Centree = Objet_Etude_Convergence.Boucle_iterations(outputFolder)
-
+time_post_boucle_etude_convergence = time.time()
+print("Time after convergence etude boucle:")
+print(time_post_boucle_etude_convergence-time_start)
 # for i in range(len(N_vect)):
 #     # print("i: ", i)
 #     # Resolution
@@ -193,7 +245,7 @@ plt.figure(3)
 plt.loglog(delta_r_vect, erreur_vect_L1_Centree, '.r', label = "Norme L1")
 
 # Ajuster une loi de puissance à toutes les valeurs (en utilisant np.polyfit avec logarithmes)
-coefficients = np.polyfit(np.log(delta_r_vect), np.log(erreur_vect_L1_Centree), 1)
+coefficients = np.polyfit(np.log(delta_r_vect[0:-2]), np.log(erreur_vect_L1_Centree[0:-2]), 1)
 exponent_logreg = coefficients[0]
 constant_logreg = coefficients[1]
 
@@ -215,7 +267,7 @@ equation_text_obj = plt.text(0.05, 0.05, equation_text, fontsize=12, transform=p
 plt.loglog(delta_r_vect, erreur_vect_L2_Centree, '.g', label = "Nomre L2")
 
 # Ajuster une loi de puissance à toutes les valeurs (en utilisant np.polyfit avec logarithmes)
-coefficients = np.polyfit(np.log(delta_r_vect), np.log(erreur_vect_L2_Centree), 1)
+coefficients = np.polyfit(np.log(delta_r_vect[0:-2]), np.log(erreur_vect_L2_Centree[0:-2]), 1)
 exponent_logreg = coefficients[0]
 constant_logreg = coefficients[1]
 
@@ -237,7 +289,7 @@ equation_text_obj = plt.text(0.05, 0.15, equation_text, fontsize=12, transform=p
 plt.loglog(delta_r_vect, erreur_vect_L_inf_Centree, '.m', label = "Norme $L_\infty$")
 
 # Ajuster une loi de puissance à toutes les valeurs (en utilisant np.polyfit avec logarithmes)
-coefficients = np.polyfit(np.log(delta_r_vect), np.log(erreur_vect_L_inf_Centree), 1)
+coefficients = np.polyfit(np.log(delta_r_vect[0:-2]), np.log(erreur_vect_L_inf_Centree[0:-2]), 1)
 exponent_logreg = coefficients[0]
 constant_logreg = coefficients[1]
 
@@ -263,7 +315,9 @@ plt.title("Normes des erreurs L1, L2 et $L_\infty$ schéma d'ordre 2 en fonction
 plt.savefig(outputFolder+"Norme_des_erreurs_Schema_2.png")
 plt.show()
 
-
+time_end = time.time()
+print("Time end:")
+print(time_end-time_start)
 
 
 

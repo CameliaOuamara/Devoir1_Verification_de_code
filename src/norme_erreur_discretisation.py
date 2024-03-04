@@ -6,8 +6,8 @@ import numpy as np
 
 class Norme_Erreur_Discretisation () :
     def __init__(self, solution_exacte, solution_numerique) :
-        self.u_exact = solution_exacte
-        self.u_numerique = solution_numerique
+        self.u_exact = solution_exacte.flatten()
+        self.u_numerique = solution_numerique.flatten()
 
     def Calcul_Norme(self) :
         if len(self.u_numerique) != len(self.u_exact):

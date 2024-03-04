@@ -39,23 +39,23 @@ class Etude_Convergence():
             elif self.schema == 2:
                 Objet_Concentration = Profil_Concentration_Centree_MNP(self.delta_r_vect[i], self.delta_t_vect[-1], self.N_vect[i], self.R, self.critere_convergence, self.critere_max_iter, self.spline_bicubic)
             Objet_Concentration.Algorithme_Resolution()
-
+            '''
             # Plot
-            Objet_Graphique = Plot_Concentration(Objet_Concentration.C, self.N_vect[i], self.sol_MNP, self.spline_bicubic, self.delta_t_vect[-1]*float(self.critere_max_iter))
+            Objet_Graphique = Plot_Concentration(Objet_Concentration.C, self.N_vect[i], self.sol_MNP[-1,:], self.spline_bicubic, self.delta_t_vect[-1]*float(self.critere_max_iter))
             Objet_Graphique.Plot_Numerique()
             # Objet_Graphique.Plot_Exact()
-            Objet_Graphique.Plot_MNP()
+            #Objet_Graphique.Plot_MNP()
             Objet_Graphique.Plot_spline_MNP()
 
             #Objet_Graphique.Save_plot("schema1_"+str(N_vect[i]), "Comparaison de résultat premier schéma, "+str(N_vect[i])+" noeuds")
             Objet_Graphique.Save_plot(outputFolder+"schema_%d_%d"%(self.schema,self.N_vect[i]), "Comparaison de résultat schéma %d ,%d noeuds"%(self.schema, self.N_vect[i]))
-            
+            '''
             # Erreur
             Objet_Norme_Erreur = Norme_Erreur_Discretisation(Objet_Concentration.C_analytic[-1,:], Objet_Concentration.C[-1,:])
             erreur_vect_L1[i], erreur_vect_L2[i], erreur_vect_L_inf[i] = Objet_Norme_Erreur.Calcul_Norme()
 
             del Objet_Concentration
-            del Objet_Graphique
+            #del Objet_Graphique
 
         return erreur_vect_L1, erreur_vect_L2, erreur_vect_L_inf
         

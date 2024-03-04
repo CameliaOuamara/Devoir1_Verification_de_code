@@ -99,7 +99,15 @@ class Profil_Concentration:
             self.B[i,0] = - self.e * C_t[i]
             
         self.B = self.B.tocsc()
-            
+    
+    def initializeField(self):
+        C_out = np.zeros((1, self.N))
+        return C_out
+    
+    def initializeFieldAnalytic(self):
+        C_out = np.zeros((1, self.N))
+        return C_out
+
     def Algorithme_Resolution(self):
         
         # Calcul matrice A
@@ -110,12 +118,13 @@ class Profil_Concentration:
         i = 0
     
         # Concentration au temps t0
-        C_t = np.zeros((1, self.N))
+        C_t = self.initializeField()
         C_t_plus_1 = np.zeros((1, self.N))
         
         # Initailisation matrice concentration a chaque temps
-        self.C = np.zeros((1, self.N))
-        self.C_analytic = np.zeros((1, self.N))
+        self.C = self.initializeField()
+        self.C_analytic = self.initializeFieldAnalytic()
+        C_temp = self.initializeFieldAnalytic()
         # self.C[0,:] = C_t
             
         #initialisation de diff_temporelle pour s'assurer qu'on soit steady à la dernière itération
@@ -231,8 +240,48 @@ class Profil_Concentration_Centree_MNP(Profil_Concentration_Centree):
         self.e = 1/self.Delta_t
         self.r = np.linspace(0, self.R, self.N)   
         self.spline_bicubic = spline_bicubic
+
+    def initializeField(self):
+        C_out = np.zeros((1, self.N))
+        for ri in range(0,len(self.r)):
+            r = self.r[ri]
+            val = self.spline_bicubic(0.0,r)
+            C_out[0][ri] = val
+        return C_out
+    
+    def initializeFieldAnalytic(self):
+        C_out = np.zeros((1, self.N))
+        for ri in range(0,len(self.r)):
+            r = self.r[ri]
+            val = self.spline_bicubic(0.0,r)
+            C_out[0][ri] = val
+        return C_out
         
+    def Matrice_A(self):
+        """
+
+        Returns
+        -------
+        Membre de gauche. Matrice A des coefficients
+
+        """
+        self.A = sp.sparse.lil_matrix((self.N,self.N))
+        self.A_inverse = np.zeros((self.N,self.N))
+        
+        self.A[0,0]   = 1.0
+        
+        self.A[-1,-1] =  1.0
+        
+        for i in range(1,self.N-1):
+            self.A[i, i-1]  = self.a - 0.5 * self.b/self.r[i]
             
+            self.A[i, i]   = -2*self.a - self.e - self.k
+
+            self.A[i, i+1] = self.a + 0.5 * self.b/self.r[i]
+            
+        #storer l'inverse puisqu'elle ne change pas
+        self.A = self.A.tocsr()
+        self.A_inverse = sp.sparse.linalg.inv(self.A)
                 
     def Matrice_B(self, C_t):
         """
@@ -258,16 +307,35 @@ class Profil_Concentration_Centree_MNP(Profil_Concentration_Centree):
         
         self.B = sp.sparse.lil_matrix((self.N, 1))
         
-        self.B[0,0]  = 0.0 + dc_dt(self.t,self.r[0])[0][0]
+        self.B[0,0]  = c(self.t,self.r[0])[0][0]
         self.B[-1,0] = c(self.t,self.r[-1])[0][0]
         
         for i in range(1,self.N-1):
-            S_MNP = dc_dt(self.t,self.r[i]) - self.Deff*(1/self.r[i] * dc_dr(self.t,self.r[i]) + d2c_dr2(self.t,self.r[i])) + self.k * c(self.t,self.r[i])
+            # print("value of r")
+            # print(self.r[i])
+            # print("C")
+            # print(c(self.t,self.r[i]))
+            # print("dCdr")
+            # print(dc_dr(self.t,self.r[i]))
+            # print("d2Cdr2")
+            # print(d2c_dr2(self.t,self.r[i]))
+            # print("dCdt")
+            # print(dc_dt(self.t,self.r[i]))
+            # print("bc left")
+            # print(c(self.t,self.r[0]))
+            # print("bc right")
+            # print(c(self.t,self.r[-1]))
+            S_MNP = (dc_dt(self.t+0.0*self.Delta_t,self.r[i]) - self.Deff*((1.0/self.r[i]) * dc_dr(self.t+0.0*self.Delta_t,self.r[i]) + d2c_dr2(self.t+0.0*self.Delta_t,self.r[i])) +self.k * c(self.t+0.0*self.Delta_t,self.r[i]))
             # S_MNP = -self.Deff*(1/self.r[i] * dc_dr(self.t,self.r[i]) + d2c_dr2(self.t,self.r[i])) + self.k * c(self.t,self.r[i])
-            self.B[i,0] = - self.e * C_t[i] + S_MNP           
-            # self.B[i,0] = - self.e * C_t[i]         
+            # print("S_MNP "+str(i))
+            # print(S_MNP)
+            # print("b no SMP")
+            # print(- self.e * C_t[i])
+            self.B[i,0] = (-self.e * C_t[i] - S_MNP)           
+            # self.B[i,0] = - self.e * C_t[i]
+        #self.B = self.B.tocsc()         
             
-                
+'''                
 class Profil_Concentration_MNP(Profil_Concentration):
     def __init__(self, delta_r, delta_t, N, R, critere_conv,critere_max_iter, spline_bicubic):
         """
@@ -337,7 +405,7 @@ class Profil_Concentration_MNP(Profil_Concentration):
             # S_MNP = -self.Deff*(1/self.r[i] * dc_dr(self.t,self.r[i]) + d2c_dr2(self.t,self.r[i])) + self.k * c(self.t,self.r[i])
             self.B[i,0] = - self.e * C_t[i] + S_MNP           
             # self.B[i,0] = - self.e * C_t[i]       
-        
+'''        
 
         
         

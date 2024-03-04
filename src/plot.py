@@ -40,7 +40,7 @@ class Plot_Concentration():
         plt.plot(np.linspace(0,max(self.r),len(self.sol_MNP)), self.sol_MNP, '.b', label = 'Solution MNP')    
 
     def Plot_spline_MNP(self):
-        plot_r = np.linspace(0,max(self.r),15*len(self.sol_MNP))
+        plot_r = np.linspace(0,max(self.r),3*len(self.sol_MNP))
         C_plot = []
         # for r_i in plot_r:
         #     C_plot_i = self.spline_MNP(self.t,r_i)
