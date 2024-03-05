@@ -79,3 +79,154 @@ class Etude_Convergence():
         return erreur_vect_L1, erreur_vect_L2, erreur_vect_L_inf
         
 
+class Etude_convergence_Comsol():
+    def __init__(self, delta_r_vect, delta_t_vect, N_vect, R, critere_convergence, critere_max_iter, schema, T_final, Classe):
+        self.delta_r_vect = delta_r_vect
+        self.delta_t_vect = delta_t_vect
+        self.N_vect = N_vect
+        self.R = R
+        self.critere_convergence = critere_convergence
+        self.critere_max_iter = critere_max_iter
+        self.schema = schema
+        self.t_final = t_final
+        self.Classe = Classe
+
+        
+        
+    def Boucle_Iterations_Espace(self):
+        
+        # Etude de convergence du pas d'espace 
+        
+        # Initialisation vecteurs contenant la norme de l'erreur entre la solution
+        # numerique et exact pour chaque pas d'espace
+        erreur_vect_L1 = np.zeros(len(self.N_vect))
+        erreur_vect_L2 = np.zeros(len(self.N_vect))
+        erreur_vect_L_inf = np.zeros(len(self.N_vect))
+        
+        # Resolution numerique des equations
+        for i in range(len(self.N_vect)):
+            # La boucle for va passer a travers les differentes valeurs de delta_r
+            # avec une valeur de delta_t fixée au pas de temps le plus petit
+            
+            Delta_t = min(self.delta_t_vect)
+            
+            # Solution numerique :
+            # Initialisation des objets
+            if self.schema==1:
+                Objet_Concentration = Profil_Concentration(self.delta_r_vect[i], Delta_t, self.N_vect[i], self.R, self.critere_convergence, self.critere_max_iter, self.T_final, self.Classe, self.schema)
+            elif self.schema == 2:
+                Objet_Concentration = Profil_Concentration_Centree(self.delta_r_vect[i], Delta_t, self.N_vect[i], self.R, self.critere_convergence, self.critere_max_iter, self.T_final, self.Classe, self.schema)
+            
+            # Resolution
+            Objet_Concentration.Algorithme_Resolution()
+            
+            # Solution exacte (Comsol):
+            data = pd.read_csv('Comsol_results_%d_4.txt'%(i+1),sep='\s+',header=None)
+            data = pd.DataFrame(data)
+
+            C_exact = data[1]
+            
+            # Calcul norme de l'erreur :
+            Objet_Norme_Erreur = Norme_Erreur_Discretisation(C_exact, Objet_Concentration.C)
+            erreur_vect_L1[i], erreur_vect_L2[i], erreur_vect_L_inf[i] = Objet_Norme_Erreur.Calcul_Norme()
+
+            del Objet_Concentration
+
+        return erreur_vect_L1, erreur_vect_L2, erreur_vect_L_inf
+    
+    def Boucle_Iterations_Temps(self):
+        
+        # Etude de convergence du pas de temps 
+        
+        # Initialisation vecteurs contenant la norme de l'erreur entre la solution
+        # numerique et exact pour chaque pas de temps
+        erreur_vect_L1 = np.zeros(len(self.N_vect))
+        erreur_vect_L2 = np.zeros(len(self.N_vect))
+        erreur_vect_L_inf = np.zeros(len(self.N_vect))
+        
+        # Resolution numerique des equations
+        for i in range(len(self.N_vect)):
+            # La boucle for va passer a travers les differentes valeurs de delta_r
+            # avec une valeur de delta_r fixée au pas d'espace le plus petit
+            
+            Delta_r = min(self.delta_r_vect)
+            
+            # Solution numerique :
+            # Initialisation des objets
+            if self.schema==1:
+                Objet_Concentration = Profil_Concentration(Delta_r, self.delta_r_vect[i], self.N_vect[i], self.R, self.critere_convergence, self.critere_max_iter, self.T_final, self.Classe, self.schema)
+            elif self.schema == 2:
+                Objet_Concentration = Profil_Concentration_Centree(Delta_r, self.delta_r_vect[i], self.N_vect[i], self.R, self.critere_convergence, self.critere_max_iter, self.T_final, self.Classe, self.schema)
+            
+            # Resolution
+            Objet_Concentration.Algorithme_Resolution()
+            
+            # Solution exacte (Comsol):
+            data = pd.read_csv('Comsol_results_4_%d.txt'%(i+1),sep='\s+',header=None)
+            data = pd.DataFrame(data)
+
+            C_exact = data[1]
+            
+            # Calcul norme de l'erreur :
+            Objet_Norme_Erreur = Norme_Erreur_Discretisation(C_exact, Objet_Concentration.C)
+            erreur_vect_L1[i], erreur_vect_L2[i], erreur_vect_L_inf[i] = Objet_Norme_Erreur.Calcul_Norme()
+
+            del Objet_Concentration
+
+        return erreur_vect_L1, erreur_vect_L2, erreur_vect_L_inf
+        
+        
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
