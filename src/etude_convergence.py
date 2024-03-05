@@ -153,3 +153,107 @@ class Etude_Convergence_MMS_temporel():
 
         return erreur_vect_L1, erreur_vect_L2, erreur_vect_L_inf    
 
+
+
+
+
+
+
+
+
+
+
+class Etude_Convergence_MNP_spatial():
+    def __init__(self, delta_r_vect, delta_t, N_vect, R, t_final, schema, spline_bicubic):
+        self.delta_r_vect = delta_r_vect
+        self.delta_t = delta_t
+        self.N_vect = N_vect
+        self.R = R
+        self.t_final = t_final
+        self.schema = schema
+        self.spline_bicubic = spline_bicubic
+
+
+    def Boucle_iterations(self):
+        erreur_vect_L1 = np.zeros(len(self.N_vect))
+        erreur_vect_L2 = np.zeros(len(self.N_vect))
+        erreur_vect_L_inf = np.zeros(len(self.N_vect))
+        
+        Deff = 1.0e9
+        k = 4.0e9
+        for i in range(len(self.N_vect)):
+
+            # Resolution
+            if self.schema==1:
+                Objet_Concentration = Profil_Concentration_MNP(self.delta_r_vect[i], self.delta_t, self.N_vect[i], self.R, self.t_final, self.spline_bicubic, Deff, k)
+            elif self.schema == 2:
+                Objet_Concentration = Profil_Concentration_Centree_MNP(self.delta_r_vect[i], self.delta_t, self.N_vect[i], self.R, self.t_final, self.spline_bicubic, Deff, k)
+
+            Objet_Concentration.Algorithme_Resolution()
+
+            # # Plot
+            Objet_Graphique = Plot_Concentration(Objet_Concentration.C, self.N_vect[i], self.spline_bicubic, 0.0, Objet_Concentration.Delta_t)
+            Objet_Graphique.Plot_MNP()
+            Objet_Graphique.Plot_Numerique()
+
+            Objet_Graphique.Save_plot("schema %d_%d"%(self.schema,self.N_vect[i]), "Comparaison de résultat schéma %d ,%d noeuds"%(self.schema, self.N_vect[i]))
+            
+            # Erreur
+            # Objet_Norme_Erreur = Norme_Erreur_Discretisation_MMS(Objet_Concentration.f_T_MMS, Objet_Concentration.C[-1,:], Objet_Concentration.Delta_t, Objet_Concentration.R)
+            Objet_Norme_Erreur = Norme_Erreur_Discretisation_MNP(self.spline_bicubic, Objet_Concentration.C, self.delta_t, Objet_Concentration.R)
+            erreur_vect_L1[i], erreur_vect_L2[i], erreur_vect_L_inf[i] = Objet_Norme_Erreur.Calcul_Norme()
+            
+            self.Erreur_matrice = Objet_Norme_Erreur.Erreur_matrice
+
+            del Objet_Concentration
+            del Objet_Graphique
+
+        return erreur_vect_L1, erreur_vect_L2, erreur_vect_L_inf
+
+
+class Etude_Convergence_MNP_temporel():
+    def __init__(self, delta_r, delta_t_vect, N, R, t_final, schema, spline_bicubic):
+        self.delta_r = delta_r
+        self.delta_t_vect = delta_t_vect
+        self.N_vect_t = t_final/delta_t_vect + 1
+        self.N = N
+        self.R = R
+        self.t_final = t_final
+        self.schema = schema
+        self.spline_bicubic = spline_bicubic
+
+
+    def Boucle_iterations(self):
+        erreur_vect_L1 = np.zeros(len(self.N_vect_t))
+        erreur_vect_L2 = np.zeros(len(self.N_vect_t))
+        erreur_vect_L_inf = np.zeros(len(self.N_vect_t))
+        
+        Deff = 1.0e-9
+        k = 4.0e-9
+        for i in range(len(self.N_vect_t)):
+
+            # Resolution
+            if self.schema==1:                                # delta_r, delta_t, N, R, critere_conv,critere_max_iter, spline_bicubic,Deff,k)
+                Objet_Concentration = Profil_Concentration_MNP(self.delta_r, self.delta_t_vect[i], self.N, self.R, self.t_final, self.spline_bicubic, Deff, k)
+            elif self.schema == 2:
+                Objet_Concentration = Profil_Concentration_Centree_MNP(self.delta_r, self.delta_t_vect[i], self.N, self.R, self.t_final, self.spline_bicubic, Deff, k)
+            Objet_Concentration.Algorithme_Resolution()
+
+    
+            # # Plot
+            Objet_Graphique = Plot_Concentration(Objet_Concentration.C, self.N, self.spline_bicubic, 0.0, Objet_Concentration.Delta_t)
+            Objet_Graphique.Plot_MNP()
+            Objet_Graphique.Plot_Numerique()
+
+            Objet_Graphique.Save_plot("etude temporel schema %d_%d"%(self.schema,self.delta_t_vect[i]), "Comparaison de résultat schéma %d ,dt = %d"%(self.schema, self.delta_t_vect[i]))
+            
+            # Erreur
+            Objet_Norme_Erreur = Norme_Erreur_Discretisation_MNP(self.spline_bicubic, Objet_Concentration.C, self.delta_t_vect[i], Objet_Concentration.R)
+            erreur_vect_L1[i], erreur_vect_L2[i], erreur_vect_L_inf[i] = Objet_Norme_Erreur.Calcul_Norme()
+            
+            self.Erreur_matrice = Objet_Norme_Erreur.Erreur_matrice
+
+            del Objet_Concentration
+            del Objet_Graphique
+
+        return erreur_vect_L1, erreur_vect_L2, erreur_vect_L_inf    

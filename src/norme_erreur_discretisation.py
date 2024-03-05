@@ -36,78 +36,30 @@ class Norme_Erreur_Discretisation_MMS () :
         self.ri, self.ti = np.meshgrid(self.r, self.t)
 
     def Calcul_Norme(self) :
-        # print("self.f_T_MMS(self.ri,self.ti): ", self.f_T_MMS(self.ri,self.ti))
-        # print("self.u_numerique: ", self.u_numerique)    
-        # print("self.t: ", self.t)
-        # print("self.r: ", self.r)
-        # print("self.u_numerique.shape[0]: ", self.u_numerique.shape[0])
-        # print("self.delta_t: ", self.delta_t)
         self.Erreur_matrice = abs(self.u_numerique - self.f_T_MMS(self.ri,self.ti))
         self.Erreur_L1 = np.mean(abs(self.u_numerique - self.f_T_MMS(self.ri,self.ti)))
         self.Erreur_L2 = np.sqrt(np.mean((self.u_numerique - self.f_T_MMS(self.ri,self.ti))*(self.u_numerique - self.f_T_MMS(self.ri,self.ti))))
         self.Erreur_Linf = np.max(abs(self.u_numerique - self.f_T_MMS(self.ri,self.ti)))
         
-        # self.Erreur_L1 = 0.0
-        # self.Erreur_L2 = 0.0
-        # self.Erreur_Linf = 0.0
- 
-        # for i in range(len(self.t)):
-        #     self.Erreur_L1 += np.mean(abs(self.u_numerique[i,:] - self.f_T_MMS(self.r,self.delta_t*i)))
-        #     self.Erreur_L2 += np.sqrt(np.mean((self.u_numerique[i,:] - self.f_T_MMS(self.r,self.delta_t*i))*(self.u_numerique[i,:] - self.f_T_MMS(self.r,self.delta_t*i))))
-        #     self.Erreur_Linf = max(np.max(abs(self.u_numerique[i,:] - self.f_T_MMS(self.r,self.delta_t*i))), self.Erreur_Linf)        
+     
         return self.Erreur_L1, self.Erreur_L2, self.Erreur_Linf 
     
     
     
-    
-# class Norme_Erreur_Discretisation_MMS () :
-#     def __init__(self, f_T_MMS, u_numerique, t_final, R) :
-#         self.f_T_MMS = f_T_MMS
-#         self.u_numerique = u_numerique
-#         self.R = R
-#         self.t_final = t_final
+class Norme_Erreur_Discretisation_MNP () :
+    def __init__(self, f_T_MMS, u_numerique, delta_t, R) :
+        self.f_T_MMS = f_T_MMS
+        self.u_numerique = u_numerique
+        self.delta_t = delta_t
+        self.R = R
+        self.t = np.linspace(0,(u_numerique.shape[0]-1)*delta_t, u_numerique.shape[0])
+        self.r = np.linspace(0,R,u_numerique.shape[1])
+
+    def Calcul_Norme(self) :
+        self.Erreur_matrice = abs(self.u_numerique - self.f_T_MMS(self.t, self.r))
+        self.Erreur_L1 = np.mean(abs(self.u_numerique - self.f_T_MMS(self.t, self.r)))
+        self.Erreur_L2 = np.sqrt(np.mean((self.u_numerique - self.f_T_MMS(self.t, self.r))*(self.u_numerique - self.f_T_MMS(self.t, self.r))))
+        self.Erreur_Linf = np.max(abs(self.u_numerique - self.f_T_MMS(self.t, self.r)))
         
-#         if u_numerique.ndim == 1:
-#             self.r = np.linspace(0,R,u_numerique.size)
-#             self.delta_t = t_final/(u_numerique.shape[0]-1)
-#             self.t = np.linspace(0,t_final, u_numerique.shape[0])
-#             self.ri, self.ti = np.meshgrid(self.r, self.t)
-#         else:
-#             self.r = np.linspace(0,R,u_numerique.shape[1])
-#             self.delta_t = 0.0
-#             self.t = 0.0
-#             self.ri, self.ti = np.meshgrid(self.r, self.t)
-
-
-
-#     def Calcul_Norme(self) :
-#         # print("self.f_T_MMS(self.ri,self.ti): ", self.f_T_MMS(self.ri,self.ti))
-#         # print("self.u_numerique: ", self.u_numerique)    
-#         # print("self.t: ", self.t)
-#         # print("self.r: ", self.r)
-#         # print("self.u_numerique.shape[0]: ", self.u_numerique.shape[0])
-#         # print("self.delta_t: ", self.delta_t)
-
-        
-#         # self.Erreur_L1 = 0.0
-#         # self.Erreur_L2 = 0.0
-#         # self.Erreur_Linf = 0.0
- 
-#         # for i in range(len(self.t)):
-#         #     self.Erreur_L1 += np.mean(abs(self.u_numerique[i,:] - self.f_T_MMS(self.r,self.delta_t*i)))
-#         #     self.Erreur_L2 += np.sqrt(np.mean((self.u_numerique[i,:] - self.f_T_MMS(self.r,self.delta_t*i))*(self.u_numerique[i,:] - self.f_T_MMS(self.r,self.delta_t*i))))
-#         #     self.Erreur_Linf = max(np.max(abs(self.u_numerique[i,:] - self.f_T_MMS(self.r,self.delta_t*i))), self.Erreur_Linf) 
-#         print("self.u_numerique.ndim: ", self.u_numerique.ndim)
-#         if self.u_numerique.ndim == 1:
-#             self.Erreur_matrice = abs(self.u_numerique - self.f_T_MMS(self.r,self.t_final))
-#             self.Erreur_L1 = np.mean(abs(self.u_numerique - self.f_T_MMS(self.r,self.t_final)))
-#             self.Erreur_L2 = np.sqrt(np.mean((self.u_numerique - self.f_T_MMS(self.r,self.t_final))*(self.u_numerique - self.f_T_MMS(self.r,self.t_final))))
-#             self.Erreur_Linf = np.max(abs(self.u_numerique - self.f_T_MMS(self.r,self.t_final)))
-#             self.Erreur_matrice = 0.0
-#         else:
-#             self.Erreur_matrice = abs(self.u_numerique - self.f_T_MMS(self.ri,self.ti))
-#             self.Erreur_L1 = np.mean(abs(self.u_numerique - self.f_T_MMS(self.ri,self.ti)))
-#             self.Erreur_L2 = np.sqrt(np.mean((self.u_numerique - self.f_T_MMS(self.ri,self.ti))*(self.u_numerique - self.f_T_MMS(self.ri,self.ti))))
-#             self.Erreur_Linf = np.max(abs(self.u_numerique - self.f_T_MMS(self.ri,self.ti)))
-            
-#         return self.Erreur_L1, self.Erreur_L2, self.Erreur_Linf 
+     
+        return self.Erreur_L1, self.Erreur_L2, self.Erreur_Linf     

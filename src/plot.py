@@ -7,7 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 class Plot_Concentration():
-    def __init__(self, C, N, sol_MNP, f_T_MMS, delta_t):
+    def __init__(self, C, N, spline_MNP, f_T_MMS, delta_t):
         # Entrées :
         self.N = N
         self.C = C
@@ -22,7 +22,7 @@ class Plot_Concentration():
         
         self.C_exact = (0.25*self.S*self.R**2*(self.r**2/self.R**2-1)/self.Deff + self.Ce)
         
-        self.sol_MNP = sol_MNP
+        self.spline_MNP = spline_MNP
         self.delta_t = delta_t
         self.t = np.linspace(0,(self.C.shape[0]-1)*delta_t, self.C.shape[0])
         self.r = np.linspace(0,self.R,C.shape[1])
@@ -40,8 +40,9 @@ class Plot_Concentration():
         
         # for i in range(len(self.C)):
         #     plt.scatter(self.r, self.C[i, :], label='i=%d'%i)
-        plt.plot(np.linspace(0,max(self.r),len(self.sol_MNP)), self.sol_MNP, '.b', label = 'Solution MNP')
-        
+        for i in range(len(self.t)):
+             plt.plot(self.r, self.spline_MNP(self.delta_t*i,self.r)[0,:], '2b', label = 'Solution MNP')
+            
     def Plot_MMS(self):
         
         # for i in range(len(self.C)):

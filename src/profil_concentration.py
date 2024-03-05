@@ -14,7 +14,7 @@ from scipy.linalg import svd
 
 class Profil_Concentration:
 
-    def __init__(self, delta_r, delta_t, N, R, critere_conv,critere_max_iter):
+    def __init__(self, delta_r, delta_t, N, R, critere_conv,critere_max_iter,Deff,k):
         """
         Parameters
         ----------
@@ -42,9 +42,9 @@ class Profil_Concentration:
         
         # Données :
         self.Ce = 12 # [mol/m3]
-        self.Deff = 10**-10 # [m2/s]
+        self.Deff = Deff # [m2/s]
         self.S = 8*10**-9 # [mol/m3/s]
-        self.k = 4.0e-9
+        self.k = k
         
         self.a = self.Deff/(self.Delta_r**2)
         self.b = self.Deff/self.Delta_r
@@ -106,7 +106,7 @@ class Profil_Concentration:
         self.Matrice_A()
         
         # Initialisation du temps
-        self.t = 0 + self.Delta_t
+        self.t = 0
         i = 0
     
         # Concentration au temps t0
@@ -121,6 +121,7 @@ class Profil_Concentration:
         diff_temporelle = 1.0e10
         
         while diff_temporelle>=self.critere_conv and i < self.critere_max_iter:
+            self.t += self.Delta_t
             # Construction matrice B
             self.Matrice_B(self.C[i])
             
@@ -132,7 +133,6 @@ class Profil_Concentration:
             self.C = np.append(self.C, C_t_plus_1.T, axis=0)
             
             # Avancer au temps suivant
-            self.t += self.Delta_t
             i+= 1
             
             
@@ -172,7 +172,7 @@ class Profil_Concentration_Centree(Profil_Concentration):
         
         
 class Profil_Concentration_Centree_MNP(Profil_Concentration_Centree):
-    def __init__(self, delta_r, delta_t, N, R, critere_conv,critere_max_iter, spline_bicubic):
+    def __init__(self, delta_r, delta_t, N, R, t_final, spline_bicubic,Deff,k):
         """
         Parameters
         ----------
@@ -193,16 +193,15 @@ class Profil_Concentration_Centree_MNP(Profil_Concentration_Centree):
         # Entrees :
         self.Delta_r = delta_r
         self.Delta_t = delta_t
-        self.critere_conv = critere_conv
-        self.critere_max_iter = critere_max_iter
+        self.t_final = t_final
         self.N = N
         self.R = R
         
         # Données :
         self.Ce = 12 # [mol/m3]
-        self.Deff = 10**-10 # [m2/s]
+        self.Deff = Deff # [m2/s]
         self.S = 8*10**-9 # [mol/m3/s]
-        self.k = 4.0e-9
+        self.k = k
         
         self.a = self.Deff/(self.Delta_r**2)
         self.b = self.Deff/self.Delta_r
@@ -232,18 +231,51 @@ class Profil_Concentration_Centree_MNP(Profil_Concentration_Centree):
         
         self.B = sp.sparse.lil_matrix((self.N, 1))
         
-        self.B[0,0]  = 0.0
-        self.B[-1,0] = self.Ce
+        self.B[0,0]  = c(self.t, 0.0)
+        self.B[-1,0] = c(self.t, self.R)
         
         for i in range(1,self.N-1):
             S_MNP = dc_dt(self.t,self.r[i]) - self.Deff*(1/self.r[i] * dc_dr(self.t,self.r[i]) + d2c_dr2(self.t,self.r[i])) + self.k * c(self.t,self.r[i])
             # S_MNP = -self.Deff*(1/self.r[i] * dc_dr(self.t,self.r[i]) + d2c_dr2(self.t,self.r[i])) + self.k * c(self.t,self.r[i])
-            self.B[i,0] = - self.e * C_t[i] + S_MNP           
-            # self.B[i,0] = - self.e * C_t[i]         
+            self.B[i,0] = - self.e * C_t[i] - S_MNP           
+            # self.B[i,0] = - self.e * C_t[i]   
+            
+    def Algorithme_Resolution(self):
+        
+        # Calcul matrice A
+        self.Matrice_A()
+        
+        # Initialisation du temps
+        self.t = 0
+        i = 0
+    
+        # Concentration au temps t0
+        C_t = self.spline_bicubic(self.r,0.0)[0,:]
+        C_t_plus_1 = np.zeros((1, self.N))
+        
+        # Initailisation matrice concentration a chaque temps
+        self.C = np.zeros((1, self.N))
+        self.C[0,:] = C_t
+        
+        while self.t < self.t_final:
+            # Avancer au temps suivant
+            self.t += self.Delta_t
+
+            # Construction matrice B
+            self.Matrice_B(self.C[i])
+            
+            # Resolution du systeme matriciel
+            # C_t_plus_1[0,:] = sp.sparse.linalg.spsolve(self.A, self.B)
+            C_t_plus_1 = self.A_inverse.dot(self.B).toarray()
+
+            # Remplissage de la matrice de concentration
+            self.C = np.append(self.C, C_t_plus_1.T, axis=0)
+            
+            i+= 1
             
                 
 class Profil_Concentration_MNP(Profil_Concentration):
-    def __init__(self, delta_r, delta_t, N, R, critere_conv,critere_max_iter, spline_bicubic):
+    def __init__(self, delta_r, delta_t, N, R, t_final, spline_bicubic,Deff,k):
         """
         Parameters
         ----------
@@ -264,16 +296,15 @@ class Profil_Concentration_MNP(Profil_Concentration):
         # Entrees :
         self.Delta_r = delta_r
         self.Delta_t = delta_t
-        self.critere_conv = critere_conv
-        self.critere_max_iter = critere_max_iter
+        self.t_final = t_final
         self.N = N
         self.R = R
         
         # Données :
         self.Ce = 12 # [mol/m3]
-        self.Deff = 10**-10 # [m2/s]
+        self.Deff = Deff # [m2/s]
         self.S = 8*10**-9 # [mol/m3/s]
-        self.k = 4.0e-9
+        self.k = k
         
         self.a = self.Deff/(self.Delta_r**2)
         self.b = self.Deff/self.Delta_r
@@ -303,18 +334,53 @@ class Profil_Concentration_MNP(Profil_Concentration):
         
         self.B = sp.sparse.lil_matrix((self.N, 1))
         
-        self.B[0,0]  = 0.0
-        self.B[-1,0] = self.Ce
+        self.B[0,0]  = c(self.t, 0.0)
+        self.B[-1,0] = c(self.t, self.R)
         
         for i in range(1,self.N-1):
             S_MNP = dc_dt(self.t,self.r[i]) - self.Deff*(1/self.r[i] * dc_dr(self.t,self.r[i]) + d2c_dr2(self.t,self.r[i])) + self.k * c(self.t,self.r[i])
             # S_MNP = -self.Deff*(1/self.r[i] * dc_dr(self.t,self.r[i]) + d2c_dr2(self.t,self.r[i])) + self.k * c(self.t,self.r[i])
-            self.B[i,0] = - self.e * C_t[i] + S_MNP           
+            self.B[i,0] = - self.e * C_t[i] - S_MNP           
             # self.B[i,0] = - self.e * C_t[i]  
+            
+    def Algorithme_Resolution(self):
+        
+        # Calcul matrice A
+        self.Matrice_A()
+        
+        # Initialisation du temps
+        self.t = 0
+        i = 0
+    
+        # Concentration au temps t0
+        C_t = self.spline_bicubic(self.r,0.0)[0,:]
+
+        # C_t = np.zeros((1, self.N))
+        C_t_plus_1 = np.zeros((1, self.N))
+        
+        # Initailisation matrice concentration a chaque temps
+        self.C = np.zeros((1, self.N))
+        self.C[0,:] = C_t
+        
+        while self.t < self.t_final:
+            # Avancer au temps suivant
+            self.t += self.Delta_t
+
+            # Construction matrice B
+            self.Matrice_B(self.C[i])
+            
+            # Resolution du systeme matriciel
+            # C_t_plus_1[0,:] = sp.sparse.linalg.spsolve(self.A, self.B)
+            C_t_plus_1 = self.A_inverse.dot(self.B).toarray()
+
+            # Remplissage de la matrice de concentration
+            self.C = np.append(self.C, C_t_plus_1.T, axis=0)
+            
+            i+= 1
             
             
 class Profil_Concentration_MMS(Profil_Concentration):
-    def __init__(self, delta_r, delta_t, N, R, t_final, Deff, k):
+    def __init__(self, delta_r, delta_t, N, R, t_final, Deff, k) :
         """
         Parameters
         ----------
@@ -426,7 +492,7 @@ class Profil_Concentration_MMS(Profil_Concentration):
         self.Matrice_A()
         
         # Initialisation du temps
-        self.t = 0 + self.Delta_t
+        self.t = 0
         i = 0
     
         # Concentration au temps t0
@@ -438,7 +504,7 @@ class Profil_Concentration_MMS(Profil_Concentration):
         self.C[0,:] = C_t
         
         while self.t < self.t_final:
-
+            self.t += self.Delta_t
             # Construction matrice B
             self.Matrice_B(self.C[i])
             
@@ -450,11 +516,8 @@ class Profil_Concentration_MMS(Profil_Concentration):
             self.C = np.append(self.C, C_t_plus_1.T, axis=0)
             
             # Avancer au temps suivant
-            self.t += self.Delta_t
             i+= 1
             
-        # print("self.t: ", self.t)
-        # print("self.Delta_r: ", self.Delta_r)
 
 class Profil_Concentration_Centree_MMS(Profil_Concentration_Centree):
     def __init__(self, delta_r, delta_t, N, R, t_final, Deff, k):
@@ -565,7 +628,7 @@ class Profil_Concentration_Centree_MMS(Profil_Concentration_Centree):
         self.Matrice_A()
         
         # Initialisation du temps
-        self.t = 0 + self.Delta_t
+        self.t = 0
         i = 0
     
         # Concentration au temps t0
@@ -577,6 +640,8 @@ class Profil_Concentration_Centree_MMS(Profil_Concentration_Centree):
         self.C[0,:] = C_t
         
         while self.t < self.t_final:
+            # Avancer au temps suivant
+            self.t += self.Delta_t
 
             # Construction matrice B
             self.Matrice_B(self.C[i])
@@ -588,8 +653,6 @@ class Profil_Concentration_Centree_MMS(Profil_Concentration_Centree):
             # Remplissage de la matrice de concentration
             self.C = np.append(self.C, C_t_plus_1.T, axis=0)
             
-            # Avancer au temps suivant
-            self.t += self.Delta_t
             i+= 1
 
 
