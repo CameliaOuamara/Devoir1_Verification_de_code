@@ -58,46 +58,57 @@ delta_t = 0.5 * delta_r*delta_r / D_eff              # Pas de temps [s]
 critere_convergence = 1.0e-14                        # Critere sur la valeur de la concentration a l'iteration i vs i-1
 critere_max_iter = 400                              # Nombre minimum d'iterations a realiser pour la convergence vers le regime permanent
 
+##Input conditions for convergence study HW2:
+convergence_dimension = "space" # switch to "time" for time, "space" for space
+manufactured_sol_type = "MNP" # switch to "MNP" for near problem, "MMS" for manufactured solution
+
+
+
 # Étude convergence MNP
-N_vect = np.arange(0,5,1, dtype=int)                 # Vecteur contenant les N utilisés dans l'étude de convergence
 ##### for space study
-N_vect = 11 * 2**N_vect
-delta_r_vect = R/(N_vect-1)                          # Vecteur Delta r correspondant au vecteur N precedent
-delta_t_vect = 1.0e5 * 1.0 +0.0*delta_r_vect*delta_r_vect / D_eff # Vecteur Delta t correspondant au vecteur Delta r precedent
-critere_max_iter = 1000+0.0*delta_r_vect
-nombre_nodes_vect = N_vect
-##### for time study
-# phys_time_simul_end = 1.0e7 * 3.125 * 401
-# N_vect = 50 * 2**N_vect
-# critere_max_iter = N_vect
-# delta_t_vect = phys_time_simul_end/(N_vect+1)                          # Vecteur Delta r correspondant au vecteur N precedent
-# delta_r_vect = R/(11.0*(2.0**8.0)-1.0) +0.0*N_vect # Vecteur Delta t correspondant au vecteur Delta r precedent
-# nombre_nodes_vect = (11 * 2**8)+0*N_vect
+if convergence_dimension == "space" and manufactured_sol_type == "MNP":
+    N_vect = np.arange(7,11,1, dtype=int)                 # Vecteur contenant les N utilisés dans l'étude de convergence
+    N_vect = 5 * 2**N_vect
+    delta_r_vect = R/(N_vect-1)                          # Vecteur Delta r correspondant au vecteur N precedent
+    delta_t_vect = 1.0e1 * 2.0 +0.0*delta_r_vect*delta_r_vect / D_eff # Vecteur Delta t correspondant au vecteur Delta r precedent
+    critere_max_iter = 1000+0.0*delta_r_vect
+    nombre_nodes_vect = N_vect
 
-'''
+##### for time study
+if convergence_dimension == "time" and manufactured_sol_type == "MNP":
+    N_vect = np.arange(0,5,1, dtype=int)                 # Vecteur contenant les N utilisés dans l'étude de convergence
+    phys_time_simul_end = 2048002000
+    N_vect = 160 * 2**N_vect
+    critere_max_iter = N_vect
+    delta_t_vect = phys_time_simul_end/(N_vect+1)                          # Vecteur Delta r correspondant au vecteur N precedent
+    delta_r_vect = R/(5.0*(2.0**8.0)-1.0) +0.0*N_vect # Vecteur Delta t correspondant au vecteur Delta r precedent
+    nombre_nodes_vect = (5 * 2**8)+0*N_vect
+
+
 # Étude convergence MMS
-N_vect = np.arange(0,5,1, dtype=int)                 # Vecteur contenant les N utilisés dans l'étude de convergence
 ##### for space study
-N_vect = 11 * 2**N_vect
-delta_r_vect = R/(N_vect-1)                          # Vecteur Delta r correspondant au vecteur N precedent
-delta_t_vect = 1.0e4 * 3.125 +0.0*delta_r_vect*delta_r_vect / D_eff # Vecteur Delta t correspondant au vecteur Delta r precedent
-critere_max_iter = 400+0.0*delta_r_vect
-nombre_nodes_vect = N_vect
+if convergence_dimension == "space" and manufactured_sol_type == "MMS":
+    N_vect = np.arange(1,7,1, dtype=int)                 # Vecteur contenant les N utilisés dans l'étude de convergence
+    N_vect = 11 * 2**N_vect
+    delta_r_vect = R/(N_vect-1)                          # Vecteur Delta r correspondant au vecteur N precedent
+    delta_t_vect = 1.0e4 * 3.125 +0.0*delta_r_vect*delta_r_vect / D_eff # Vecteur Delta t correspondant au vecteur Delta r precedent
+    critere_max_iter = 400+0.0*delta_r_vect
+    nombre_nodes_vect = N_vect
 ##### for time study
-# phys_time_simul_end = 1.0e7 * 3.125 * 401
-# N_vect = 50 * 2**N_vect
-# critere_max_iter = N_vect
-# delta_t_vect = phys_time_simul_end/(N_vect+1)                          # Vecteur Delta r correspondant au vecteur N precedent
-# delta_r_vect = R/(11.0*(2.0**8.0)-1.0) +0.0*N_vect # Vecteur Delta t correspondant au vecteur Delta r precedent
-# nombre_nodes_vect = (11 * 2**8)+0*N_vect
-'''
+if convergence_dimension == "time" and manufactured_sol_type == "MMS":
+    N_vect = np.arange(0,5,1, dtype=int)                 # Vecteur contenant les N utilisés dans l'étude de convergence
+    phys_time_simul_end = 1.0e7 * 3.125 * 401
+    N_vect = 50 * 2**N_vect
+    critere_max_iter = N_vect
+    delta_t_vect = phys_time_simul_end/(N_vect+1)                          # Vecteur Delta r correspondant au vecteur N precedent
+    delta_r_vect = R/(11.0*(2.0**8.0)-1.0) +0.0*N_vect # Vecteur Delta t correspondant au vecteur Delta r precedent
+    nombre_nodes_vect = (11 * 2**8)+0*N_vect
 
+print("convergence study values:")
 print(delta_r_vect)
 print(delta_t_vect)
 print(critere_max_iter)
 print(nombre_nodes_vect)
-# delta_t_vect = 0.5 * delta_r_vect*delta_r_vect / D_eff # Vecteur Delta t correspondant au vecteur Delta r precedent
-
 '''
 # -----------------------------------------------------------------------------------------------------------------
 #                           Solution avec le maillage le plus fin (pour MNP)
@@ -196,46 +207,36 @@ plt.show()
 # -----------------------------------------------------------------------------------------------------------------
 #                           Solution avec le maillage le plus fin (pour MNP)
 # -----------------------------------------------------------------------------------------------------------------
-sol_MNP_Centree = Profil_Concentration_Centree(delta_r_vect[-1], delta_t_vect[-1], nombre_nodes_vect[-1], R, critere_convergence, critere_max_iter[-1])
+## input MNP delta_r_convergence
+if convergence_dimension == "space" and manufactured_sol_type == "MNP":
+    decalage_ignore = 20000
+    decalage_fine_mesh = -4
+## input MNP delta_t_convergence
+if convergence_dimension == "time" and manufactured_sol_type == "MNP":
+    decalage_ignore = 0
+    decalage_fine_mesh = -5
+# input MMS convergence
+if manufactured_sol_type == "MMS":
+    decalage_ignore = 0
+    decalage_fine_mesh = -1
+
+sol_MNP_Centree = Profil_Concentration_Centree(delta_r_vect[decalage_fine_mesh], delta_t_vect[decalage_fine_mesh], nombre_nodes_vect[decalage_fine_mesh], R, critere_convergence, critere_max_iter[decalage_fine_mesh]+decalage_ignore)
 sol_MNP_Centree.Algorithme_Resolution()
-nb_time_step = sol_MNP_Centree.C.shape[0]
-r_fine_mesh = np.linspace(0, R, N_vect[-1])
-t_fine_mesh = np.linspace(0, delta_t_vect[-1]*(nb_time_step-1), nb_time_step)
+nb_time_step = sol_MNP_Centree.C.shape[0]-decalage_ignore
+r_fine_mesh = np.linspace(0, R, nombre_nodes_vect[decalage_fine_mesh])
+t_fine_mesh = np.linspace(0, delta_t_vect[decalage_fine_mesh]*(nb_time_step-1), nb_time_step)
 time_before_compute_dummy = time.time()
 C_dummy = compute_dummy_MMS_sol(t_fine_mesh,r_fine_mesh)
 time_after_compute_dummy = time.time()
 print("time to compute dummy:")
 print(time_after_compute_dummy - time_before_compute_dummy)
-spline_bicubic_Centree = sp.interpolate.RectBivariateSpline(t_fine_mesh, r_fine_mesh, sol_MNP_Centree.C[:,:])
-#spline_bicubic_Centree = sp.interpolate.RectBivariateSpline(t_fine_mesh, r_fine_mesh, C_dummy[:,:])
-'''
-print("BEGINNING TEST COMPARISON TABLE VS SPLINE VS FUNCTION")
-
-for ri in range(0,len(r_fine_mesh)):
-    for ti in range(0,len(t_fine_mesh)):
-        print("r")
-        print(r_fine_mesh[ri])
-        print("t")
-        print(t_fine_mesh[ti])
-        print("TABLE VALUE")
-        val_table = C_dummy[:,:][ti][ri]
-        print(val_table)
-        print("spline value")
-        val_spline = spline_bicubic_Centree(t_fine_mesh[ti],r_fine_mesh[ri])
-        print(val_spline)
-        print("function value")
-        val_func = np.exp(-1.0*t_fine_mesh[ti]*(1.0/1.0e9))*((r_fine_mesh[ri]-0.25)*(r_fine_mesh[ri]-0.25))
-        print(val_func)
-        print(val_func-val_spline)
-        if abs(val_func - val_spline)>1.0e-12:
-            print("WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW")
-        if abs(val_func - val_table) >1.0e-12:
-            print("________________________________________________________________________________")
-'''
+if manufactured_sol_type == "MNP":
+    spline_bicubic_Centree = sp.interpolate.RectBivariateSpline(t_fine_mesh, r_fine_mesh, sol_MNP_Centree.C[decalage_ignore:,:])
+if manufactured_sol_type == "MMS":
+    spline_bicubic_Centree = sp.interpolate.RectBivariateSpline(t_fine_mesh, r_fine_mesh, C_dummy[:,:])
 
 print("Time after spline MNP:")
 time_post_MNP_spline = time.time()
-
 print(time_post_MNP_spline-time_start)
 #%%
 # ----------------------------------------------------------------------------------------
@@ -254,28 +255,13 @@ erreur_vect_L1_Centree, erreur_vect_L2_Centree, erreur_vect_L_inf_Centree = Obje
 time_post_boucle_etude_convergence = time.time()
 print("Time after convergence etude boucle:")
 print(time_post_boucle_etude_convergence-time_start)
-# for i in range(len(N_vect)):
-#     # print("i: ", i)
-#     # Resolution
-#     Objet_Concentration = Profil_Concentration_Centree(delta_r_vect[i], delta_t_vect[i], N_vect[i], R, critere_convergence, critere_max_iter)
-#     Objet_Concentration.Algorithme_Resolution()
-
-#     # Plot
-#     Objet_Graphique = Plot_Concentration(Objet_Concentration.C, N_vect[i])
-#     Objet_Graphique.Plot_Numerique()
-#     Objet_Graphique.Plot_Exact()
-#     Objet_Graphique.Save_plot("schema2_"+str(N_vect[i]), "Comparaison de résultat deuxième schéma, "+str(N_vect[i])+" noeuds")
-    
-#     # Erreur
-#     Objet_Norme_Erreur = Norme_Erreur_Discretisation(Objet_Graphique.C_exact, Objet_Concentration.C[-1,:])
-#     erreur_vect_L1_Centree[i], erreur_vect_L2_Centree[i], erreur_vect_L_inf_Centree[i] = Objet_Norme_Erreur.Calcul_Norme()
-
-#     del Objet_Concentration
-#     del Objet_Graphique
     
 
 plt.figure(3)
-array_x_conv = delta_r_vect
+if convergence_dimension == "space":
+    array_x_conv = delta_r_vect
+if convergence_dimension == "time":
+    array_x_conv = delta_t_vect
 # Graphique log-log norme de l'erreur L1 vs delta_r
 plt.loglog(array_x_conv, erreur_vect_L1_Centree, '.r', label = "Norme L1")
 
@@ -295,8 +281,12 @@ extrapolated_value = fit_function(array_x_conv[-1])
 plt.loglog(array_x_conv, fit_function(array_x_conv), linestyle='--', color='r')
 
 # Afficher l'équation de la régression en loi de puissance pour la norme L1
-equation_text = f'$L_1 = {np.exp(constant_logreg):.4E} \\times Δr^{{{exponent_logreg:.4f}}}$'
-equation_text_obj = plt.text(0.05, 0.05, equation_text, fontsize=12, transform=plt.gca().transAxes, color='k')
+if convergence_dimension == "space":
+    equation_text = f'$L_1 = {np.exp(constant_logreg):.4E} \\times Δr^{{{exponent_logreg:.4f}}}$'
+    equation_text_obj = plt.text(0.05, 0.05, equation_text, fontsize=12, transform=plt.gca().transAxes, color='k')
+if convergence_dimension == "time":
+    equation_text = f'$L_1 = {np.exp(constant_logreg):.4E} \\times Δt^{{{exponent_logreg:.4f}}}$'
+    equation_text_obj = plt.text(0.05, 0.05, equation_text, fontsize=12, transform=plt.gca().transAxes, color='k')
 
 # Graphique log-log norme de l'erreur L2 vs delta_r
 plt.loglog(array_x_conv, erreur_vect_L2_Centree, '.g', label = "Nomre L2")
@@ -317,8 +307,13 @@ extrapolated_value = fit_function(array_x_conv[-1])
 plt.loglog(array_x_conv, fit_function(array_x_conv), linestyle='--', color='g')
 
 # Afficher l'équation de la régression en loi de puissance pour la norme L2
-equation_text = f'$L_2 = {np.exp(constant_logreg):.4E} \\times Δr^{{{exponent_logreg:.4f}}}$'
-equation_text_obj = plt.text(0.05, 0.15, equation_text, fontsize=12, transform=plt.gca().transAxes, color='k')
+if convergence_dimension == "space":
+    equation_text = f'$L_2 = {np.exp(constant_logreg):.4E} \\times Δr^{{{exponent_logreg:.4f}}}$'
+    equation_text_obj = plt.text(0.05, 0.15, equation_text, fontsize=12, transform=plt.gca().transAxes, color='k')
+if convergence_dimension == "time":
+    equation_text = f'$L_2 = {np.exp(constant_logreg):.4E} \\times Δt^{{{exponent_logreg:.4f}}}$'
+    equation_text_obj = plt.text(0.05, 0.15, equation_text, fontsize=12, transform=plt.gca().transAxes, color='k')
+
 
 # Graphique log-log norme de l'erreur Linf vs delta_r
 plt.loglog(array_x_conv, erreur_vect_L_inf_Centree, '.m', label = "Norme $L_\infty$")
@@ -339,15 +334,26 @@ extrapolated_value = fit_function(array_x_conv[-1])
 plt.loglog(array_x_conv, fit_function(array_x_conv), linestyle='--', color='m')
 
 # Afficher l'équation de la régression en loi de puissance pour la norme Linf
-equation_text = f'$Linf = {np.exp(constant_logreg):.4E} \\times Δr^{{{exponent_logreg:.4f}}}$'
-equation_text_obj = plt.text(0.05, 0.25, equation_text, fontsize=12, transform=plt.gca().transAxes, color='k')
+if convergence_dimension == "space":
+    equation_text = f'$Linf = {np.exp(constant_logreg):.4E} \\times Δr^{{{exponent_logreg:.4f}}}$'
+    equation_text_obj = plt.text(0.05, 0.25, equation_text, fontsize=12, transform=plt.gca().transAxes, color='k')
+if convergence_dimension == "time":
+    equation_text = f'$Linf = {np.exp(constant_logreg):.4E} \\times Δt^{{{exponent_logreg:.4f}}}$'
+    equation_text_obj = plt.text(0.05, 0.25, equation_text, fontsize=12, transform=plt.gca().transAxes, color='k')
 
 plt.xlabel("delta_r")
-plt.ylabel("erreur L_inf")
+plt.ylabel("erreur")
 plt.legend()
 plt.grid()
 plt.title("Normes des erreurs L1, L2 et $L_\infty$ schéma d'ordre 2 en fonction de N")
-plt.savefig(outputFolder+"Norme_des_erreurs_Schema_2.png")
+if convergence_dimension == "time" and manufactured_sol_type == "MNP":
+    plt.savefig(outputFolder+"Norme_des_erreurs_Schema_2_MNP_time.png")
+if convergence_dimension == "space" and manufactured_sol_type == "MNP":
+    plt.savefig(outputFolder+"Norme_des_erreurs_Schema_2_MNP_space.png")
+if convergence_dimension == "time" and manufactured_sol_type == "MMS":
+    plt.savefig(outputFolder+"Norme_des_erreurs_Schema_2_MMS_time.png")
+if convergence_dimension == "space" and manufactured_sol_type == "MMS":
+    plt.savefig(outputFolder+"Norme_des_erreurs_Schema_2_MMS_space.png")
 plt.show()
 
 time_end = time.time()

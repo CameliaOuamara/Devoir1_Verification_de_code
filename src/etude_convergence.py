@@ -45,7 +45,7 @@ class Etude_Convergence():
             time_after_resolution = time.time()
             print("time for solving prob in convergence study:")
             print(time_after_resolution-time_before_resolution)
-            
+            '''
             # Plot
             Objet_Graphique = Plot_Concentration(Objet_Concentration.C, self.nombre_nodes_vect[i], self.sol_MNP[-1,:], self.spline_bicubic, self.delta_t_vect[i]*float(self.critere_max_iter[i]))
             Objet_Graphique.Plot_Numerique()
@@ -55,10 +55,10 @@ class Etude_Convergence():
 
             #Objet_Graphique.Save_plot("schema1_"+str(N_vect[i]), "Comparaison de résultat premier schéma, "+str(N_vect[i])+" noeuds")
             Objet_Graphique.Save_plot(outputFolder+"schema_%d_%d"%(self.schema,self.N_vect[i]), "Comparaison de résultat schéma %d ,%d noeuds"%(self.schema, self.N_vect[i]))
-            
+            '''
             # Erreur
             time_before_computing_error = time.time()
-            Objet_Norme_Erreur = Norme_Erreur_Discretisation(Objet_Concentration.C_analytic[100:-1,:], Objet_Concentration.C[100:-1,:])
+            Objet_Norme_Erreur = Norme_Erreur_Discretisation(Objet_Concentration.C_analytic[:,:], Objet_Concentration.C[:,:])
             erreur_vect_L1[i], erreur_vect_L2[i], erreur_vect_L_inf[i] = Objet_Norme_Erreur.Calcul_Norme()
             time_after_computing_error = time.time()
             print("time spent computing error of prob in convergence study:")

@@ -109,7 +109,8 @@ class Profil_Concentration:
         return C_out
 
     def Algorithme_Resolution(self):
-        
+        print("nombre de nodes:")
+        print(self.N)
         # Calcul matrice A
         self.Matrice_A()
         
@@ -311,26 +312,9 @@ class Profil_Concentration_Centree_MNP(Profil_Concentration_Centree):
         self.B[-1,0] = c(self.t,self.r[-1])[0][0]
         
         for i in range(1,self.N-1):
-            # print("value of r")
-            # print(self.r[i])
-            # print("C")
-            # print(c(self.t,self.r[i]))
-            # print("dCdr")
-            # print(dc_dr(self.t,self.r[i]))
-            # print("d2Cdr2")
-            # print(d2c_dr2(self.t,self.r[i]))
-            # print("dCdt")
-            # print(dc_dt(self.t,self.r[i]))
-            # print("bc left")
-            # print(c(self.t,self.r[0]))
-            # print("bc right")
-            # print(c(self.t,self.r[-1]))
+
             S_MNP = (dc_dt(self.t+0.0*self.Delta_t,self.r[i]) - self.Deff*((1.0/self.r[i]) * dc_dr(self.t+0.0*self.Delta_t,self.r[i]) + d2c_dr2(self.t+0.0*self.Delta_t,self.r[i])) +self.k * c(self.t+0.0*self.Delta_t,self.r[i]))
             # S_MNP = -self.Deff*(1/self.r[i] * dc_dr(self.t,self.r[i]) + d2c_dr2(self.t,self.r[i])) + self.k * c(self.t,self.r[i])
-            # print("S_MNP "+str(i))
-            # print(S_MNP)
-            # print("b no SMP")
-            # print(- self.e * C_t[i])
             self.B[i,0] = (-self.e * C_t[i] - S_MNP)           
             # self.B[i,0] = - self.e * C_t[i]
         #self.B = self.B.tocsc()         
