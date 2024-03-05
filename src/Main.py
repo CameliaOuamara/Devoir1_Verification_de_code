@@ -49,22 +49,53 @@ R = 0.5                                              # Rayon du cylindre [m]
 N = 100                                              # Nombre de points de discretisation [-]
 delta_r = R/(N-1)                                    # Taille de l'intervalle geometrique [m]
 D_eff = 1.0e-10                                      # Coefficient de diffusion effectif [m2/s]
-outputFolder = "D:\\POLY\\DOC\\SESSION_H2024\\verification_et_validation\\devoir2_equipe\\git\\Devoir1_Verification_de_code\\results"
+outputFolder = "/home/apollon/vilig/cours_VnV/devoir2/tracked_dir/Devoir1_Verification_de_code/results/"
 
 # Règle de pouce : Prendre un dt à la limite de la stabilité pour le schéma explicite
 delta_t = 0.5 * delta_r*delta_r / D_eff              # Pas de temps [s]
 
 # Critere de convergence
 critere_convergence = 1.0e-14                        # Critere sur la valeur de la concentration a l'iteration i vs i-1
-critere_max_iter = 1000                              # Nombre minimum d'iterations a realiser pour la convergence vers le regime permanent
+critere_max_iter = 400                              # Nombre minimum d'iterations a realiser pour la convergence vers le regime permanent
 
-# Étude convergence
-N_vect = np.arange(0,7,1, dtype=int)                 # Vecteur contenant les N utilisés dans l'étude de convergence
-N_vect = 5 * 2**N_vect
+# Étude convergence MNP
+N_vect = np.arange(0,5,1, dtype=int)                 # Vecteur contenant les N utilisés dans l'étude de convergence
+##### for space study
+N_vect = 11 * 2**N_vect
 delta_r_vect = R/(N_vect-1)                          # Vecteur Delta r correspondant au vecteur N precedent
-delta_t_vect = 1.0e6 * 0.125 +0.0*delta_r_vect*delta_r_vect / D_eff # Vecteur Delta t correspondant au vecteur Delta r precedent
+delta_t_vect = 1.0e5 * 1.0 +0.0*delta_r_vect*delta_r_vect / D_eff # Vecteur Delta t correspondant au vecteur Delta r precedent
+critere_max_iter = 1000+0.0*delta_r_vect
+nombre_nodes_vect = N_vect
+##### for time study
+# phys_time_simul_end = 1.0e7 * 3.125 * 401
+# N_vect = 50 * 2**N_vect
+# critere_max_iter = N_vect
+# delta_t_vect = phys_time_simul_end/(N_vect+1)                          # Vecteur Delta r correspondant au vecteur N precedent
+# delta_r_vect = R/(11.0*(2.0**8.0)-1.0) +0.0*N_vect # Vecteur Delta t correspondant au vecteur Delta r precedent
+# nombre_nodes_vect = (11 * 2**8)+0*N_vect
+
+'''
+# Étude convergence MMS
+N_vect = np.arange(0,5,1, dtype=int)                 # Vecteur contenant les N utilisés dans l'étude de convergence
+##### for space study
+N_vect = 11 * 2**N_vect
+delta_r_vect = R/(N_vect-1)                          # Vecteur Delta r correspondant au vecteur N precedent
+delta_t_vect = 1.0e4 * 3.125 +0.0*delta_r_vect*delta_r_vect / D_eff # Vecteur Delta t correspondant au vecteur Delta r precedent
+critere_max_iter = 400+0.0*delta_r_vect
+nombre_nodes_vect = N_vect
+##### for time study
+# phys_time_simul_end = 1.0e7 * 3.125 * 401
+# N_vect = 50 * 2**N_vect
+# critere_max_iter = N_vect
+# delta_t_vect = phys_time_simul_end/(N_vect+1)                          # Vecteur Delta r correspondant au vecteur N precedent
+# delta_r_vect = R/(11.0*(2.0**8.0)-1.0) +0.0*N_vect # Vecteur Delta t correspondant au vecteur Delta r precedent
+# nombre_nodes_vect = (11 * 2**8)+0*N_vect
+'''
+
 print(delta_r_vect)
 print(delta_t_vect)
+print(critere_max_iter)
+print(nombre_nodes_vect)
 # delta_t_vect = 0.5 * delta_r_vect*delta_r_vect / D_eff # Vecteur Delta t correspondant au vecteur Delta r precedent
 
 '''
@@ -165,14 +196,18 @@ plt.show()
 # -----------------------------------------------------------------------------------------------------------------
 #                           Solution avec le maillage le plus fin (pour MNP)
 # -----------------------------------------------------------------------------------------------------------------
-sol_MNP_Centree = Profil_Concentration_Centree(delta_r_vect[-1], delta_t_vect[-1], N_vect[-3], R, critere_convergence, critere_max_iter)
+sol_MNP_Centree = Profil_Concentration_Centree(delta_r_vect[-1], delta_t_vect[-1], nombre_nodes_vect[-1], R, critere_convergence, critere_max_iter[-1])
 sol_MNP_Centree.Algorithme_Resolution()
 nb_time_step = sol_MNP_Centree.C.shape[0]
 r_fine_mesh = np.linspace(0, R, N_vect[-1])
 t_fine_mesh = np.linspace(0, delta_t_vect[-1]*(nb_time_step-1), nb_time_step)
+time_before_compute_dummy = time.time()
 C_dummy = compute_dummy_MMS_sol(t_fine_mesh,r_fine_mesh)
-#spline_bicubic_Centree = sp.interpolate.RectBivariateSpline(t_fine_mesh, r_fine_mesh, sol_MNP_Centree.C[:,:])
-spline_bicubic_Centree = sp.interpolate.RectBivariateSpline(t_fine_mesh, r_fine_mesh, C_dummy[:,:])
+time_after_compute_dummy = time.time()
+print("time to compute dummy:")
+print(time_after_compute_dummy - time_before_compute_dummy)
+spline_bicubic_Centree = sp.interpolate.RectBivariateSpline(t_fine_mesh, r_fine_mesh, sol_MNP_Centree.C[:,:])
+#spline_bicubic_Centree = sp.interpolate.RectBivariateSpline(t_fine_mesh, r_fine_mesh, C_dummy[:,:])
 '''
 print("BEGINNING TEST COMPARISON TABLE VS SPLINE VS FUNCTION")
 
@@ -211,7 +246,7 @@ print(time_post_MNP_spline-time_start)
 # erreur_vect_L_inf_Centree = np.zeros(len(N_vect))
 
 plt.figure(2)
-Objet_Etude_Convergence = Etude_Convergence(delta_r_vect, delta_t_vect, N_vect, R, critere_convergence, critere_max_iter, 2, sol_MNP_Centree.C, spline_bicubic_Centree)
+Objet_Etude_Convergence = Etude_Convergence(delta_r_vect, delta_t_vect, N_vect, R, critere_convergence, critere_max_iter, 2, sol_MNP_Centree.C, spline_bicubic_Centree, nombre_nodes_vect)
 time_post_crea_etude_convergence = time.time()
 print("Time after convergence etude cration:")
 print(time_post_crea_etude_convergence-time_start)
@@ -240,12 +275,12 @@ print(time_post_boucle_etude_convergence-time_start)
     
 
 plt.figure(3)
-
+array_x_conv = delta_r_vect
 # Graphique log-log norme de l'erreur L1 vs delta_r
-plt.loglog(delta_r_vect, erreur_vect_L1_Centree, '.r', label = "Norme L1")
+plt.loglog(array_x_conv, erreur_vect_L1_Centree, '.r', label = "Norme L1")
 
 # Ajuster une loi de puissance à toutes les valeurs (en utilisant np.polyfit avec logarithmes)
-coefficients = np.polyfit(np.log(delta_r_vect[0:-2]), np.log(erreur_vect_L1_Centree[0:-2]), 1)
+coefficients = np.polyfit(np.log(array_x_conv[0:-1]), np.log(erreur_vect_L1_Centree[0:-1]), 1)
 exponent_logreg = coefficients[0]
 constant_logreg = coefficients[1]
 
@@ -256,18 +291,18 @@ fit_function_log = lambda x: exponent_logreg * x + constant_logreg
 fit_function = lambda x: np.exp(fit_function_log(np.log(x)))
 
 # Extrapoler la valeur prédite pour la dernière valeur de h_values
-extrapolated_value = fit_function(delta_r_vect[-1])
-plt.loglog(delta_r_vect, fit_function(delta_r_vect), linestyle='--', color='r')
+extrapolated_value = fit_function(array_x_conv[-1])
+plt.loglog(array_x_conv, fit_function(array_x_conv), linestyle='--', color='r')
 
 # Afficher l'équation de la régression en loi de puissance pour la norme L1
 equation_text = f'$L_1 = {np.exp(constant_logreg):.4E} \\times Δr^{{{exponent_logreg:.4f}}}$'
 equation_text_obj = plt.text(0.05, 0.05, equation_text, fontsize=12, transform=plt.gca().transAxes, color='k')
 
 # Graphique log-log norme de l'erreur L2 vs delta_r
-plt.loglog(delta_r_vect, erreur_vect_L2_Centree, '.g', label = "Nomre L2")
+plt.loglog(array_x_conv, erreur_vect_L2_Centree, '.g', label = "Nomre L2")
 
 # Ajuster une loi de puissance à toutes les valeurs (en utilisant np.polyfit avec logarithmes)
-coefficients = np.polyfit(np.log(delta_r_vect[0:-2]), np.log(erreur_vect_L2_Centree[0:-2]), 1)
+coefficients = np.polyfit(np.log(array_x_conv[0:-1]), np.log(erreur_vect_L2_Centree[0:-1]), 1)
 exponent_logreg = coefficients[0]
 constant_logreg = coefficients[1]
 
@@ -278,18 +313,18 @@ fit_function_log = lambda x: exponent_logreg * x + constant_logreg
 fit_function = lambda x: np.exp(fit_function_log(np.log(x)))
 
 # Extrapoler la valeur prédite pour la dernière valeur de h_values
-extrapolated_value = fit_function(delta_r_vect[-1])
-plt.loglog(delta_r_vect, fit_function(delta_r_vect), linestyle='--', color='g')
+extrapolated_value = fit_function(array_x_conv[-1])
+plt.loglog(array_x_conv, fit_function(array_x_conv), linestyle='--', color='g')
 
 # Afficher l'équation de la régression en loi de puissance pour la norme L2
 equation_text = f'$L_2 = {np.exp(constant_logreg):.4E} \\times Δr^{{{exponent_logreg:.4f}}}$'
 equation_text_obj = plt.text(0.05, 0.15, equation_text, fontsize=12, transform=plt.gca().transAxes, color='k')
 
 # Graphique log-log norme de l'erreur Linf vs delta_r
-plt.loglog(delta_r_vect, erreur_vect_L_inf_Centree, '.m', label = "Norme $L_\infty$")
+plt.loglog(array_x_conv, erreur_vect_L_inf_Centree, '.m', label = "Norme $L_\infty$")
 
 # Ajuster une loi de puissance à toutes les valeurs (en utilisant np.polyfit avec logarithmes)
-coefficients = np.polyfit(np.log(delta_r_vect[0:-2]), np.log(erreur_vect_L_inf_Centree[0:-2]), 1)
+coefficients = np.polyfit(np.log(array_x_conv[0:-1]), np.log(erreur_vect_L_inf_Centree[0:-1]), 1)
 exponent_logreg = coefficients[0]
 constant_logreg = coefficients[1]
 
@@ -300,8 +335,8 @@ fit_function_log = lambda x: exponent_logreg * x + constant_logreg
 fit_function = lambda x: np.exp(fit_function_log(np.log(x)))
 
 # Extrapoler la valeur prédite pour la dernière valeur de h_values
-extrapolated_value = fit_function(delta_r_vect[-1])
-plt.loglog(delta_r_vect, fit_function(delta_r_vect), linestyle='--', color='m')
+extrapolated_value = fit_function(array_x_conv[-1])
+plt.loglog(array_x_conv, fit_function(array_x_conv), linestyle='--', color='m')
 
 # Afficher l'équation de la régression en loi de puissance pour la norme Linf
 equation_text = f'$Linf = {np.exp(constant_logreg):.4E} \\times Δr^{{{exponent_logreg:.4f}}}$'
