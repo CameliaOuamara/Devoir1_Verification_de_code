@@ -89,7 +89,7 @@ class Regression_Loi_Puissance():
         
         plt.xlabel("$\Delta r$")
         plt.ylabel("Norme de l'erreur")
-        plt.legend()
+        plt.legend(loc=2)
         plt.grid()
         plt.title("Normes des erreurs L1, L2 et $L_\infty$ en fonction de $\Delta r$ schéma %d " %self.schema)
         plt.show()
@@ -163,7 +163,7 @@ class Regression_Loi_Puissance():
         
         plt.xlabel("$\Delta t$")
         plt.ylabel("Norme de l'erreur")
-        plt.legend()
+        plt.legend(loc=2)
         plt.grid()
         plt.title("Normes des erreurs L1, L2 et $L_\infty$ en fonction de $\Delta t$ schéma %d " %self.schema)
         plt.show()

@@ -4,6 +4,7 @@ Classe qui calcule la solution numerique du probleme étudié pour une discretis
 
 # Libraries
 import numpy as np
+import matplotlib.pyplot as plt
 
 # import sympy as sp
 import scipy.sparse as sp
@@ -95,30 +96,14 @@ class Profil_Concentration:
         """
         
         self.B = sp.lil_matrix((self.N, 1))
-        #t_simulation = self.t_final
-        # Recuperation du terme source et conditions limites
-        if self.Classe == 'MMS':
-            Classe = MMS()
-            S = Classe.Terme_source
-            dCdr_r0 = Classe.dCdr_r0(0, t_simulation)
-            C_rR = Classe.C(self.R, t_simulation)
             
-            for i in range(1,self.N-1):
-                self.B[i,0] = - self.e * C_t[i] + S(self.r[i], t_simulation)
-        else :
-            Classe = Fick(self.N)
-            S = Classe.Terme_source
-            dCdr_r0 = Classe.dCdr_r0
-            C_rR = Classe.C_rR 
-            
-            for i in range(1,self.N-1):
-                self.B[i,0] = - self.e * C_t[i] + S
+        for i in range(1,self.N-1):
+            self.B[i,0] = - self.e * C_t[i] 
         
-        if self.schema == 1:
-            self.B[0,0]  = dCdr_r0 *self.Delta_r # 0.0 
-        elif self.schema == 2:
-            self.B[0,0]  = dCdr_r0 *2*self.Delta_r # 0.0
-        self.B[-1,0] = C_rR     # self.Ce
+
+        self.B[0,0]  = 0.0 
+
+        self.B[-1,0] = self.Ce
         
         self.B = self.B.tocsc()
             
@@ -130,65 +115,38 @@ class Profil_Concentration:
         self.t = 0 + self.Delta_t
         i = 0
     
-        # Initailisation matrice concentration a chaque temps
-        if self.Classe=='MMS':
-            Classe = Fick(self.N)
-            C_0 = Classe.C0
-        else:
-            Classe = MMS()
-            C_0 = Classe.C(self.r, 0)
             
         # Concentration au temps t0
-        C_t = C_0
-        C_t_plus_1 = C_t
+        C_t_plus_1 = np.zeros(self.N)
+        C_t_plus_1[-1] = self.Ce
         
         self.C = np.zeros((1, self.N))
-        self.C[0,:] = C_0
+        self.C[0,:] = 0
+        #self.C[-1,-1] = self.Ce
 
         #initialisation de diff_temporelle pour s'assurer qu'on soit steady à la dernière itération
         diff_temporelle = 1.0e10
         
         i=0
-        if self.t_final ==0:
+        while self.t<=self.t_final:
+            # Construction matrice B
+            #self.Matrice_B(self.C[i], self.t)
+            self.Matrice_B(C_t_plus_1, self.t)
             
-            while diff_temporelle>=self.critere_conv and i < self.critere_max_iter:
-                # Construction matrice B
-                #self.Matrice_B(self.C[i], self.t)
-                self.Matrice_B(C_t_plus_1, self.t)
-                
-                # Resolution du systeme matriciel
-                # C_t_plus_1[0,:] = sp.linalg.spsolve(self.A, self.B)
-                C_t_plus_1 = self.A_inverse.dot(self.B).toarray()
-    
-                # Remplissage de la matrice de concentration
-                self.C = np.append(self.C, C_t_plus_1.T, axis=0)
-                
-                # Avancer au temps suivant
-                self.t += self.Delta_t
-                i+= 1
+            # Resolution du systeme matriciel
+            # C_t_plus_1[0,:] = sp.linalg.spsolve(self.A, self.B)
+            C_t_plus_1 = self.A_inverse.dot(self.B).toarray()
+
+            # Remplissage de la matrice de concentration
+            self.C = np.append(self.C, C_t_plus_1.T, axis=0)
             
-                # calcul de la différence temporelle
-                diff_temporelle = np.linalg.norm(self.C[i, :] - self.C[i-1, :])/np.linalg.norm(self.C[i, :])
-        else:
-            while self.t<=self.t_final:
-                # Construction matrice B
-                #self.Matrice_B(self.C[i], self.t)
-                self.Matrice_B(C_t_plus_1, self.t)
-                
-                # Resolution du systeme matriciel
-                # C_t_plus_1[0,:] = sp.linalg.spsolve(self.A, self.B)
-                C_t_plus_1 = self.A_inverse.dot(self.B).toarray()
-    
-                # Remplissage de la matrice de concentration
-                self.C = np.append(self.C, C_t_plus_1.T, axis=0)
-                
-                # Avancer au temps suivant
-                self.t += self.Delta_t
-                i+= 1
+            # Avancer au temps suivant
+            self.t += self.Delta_t
+            i+= 1
+        
+            # calcul de la différence temporelle
+            diff_temporelle = np.linalg.norm(self.C[i, :] - self.C[i-1, :])/np.linalg.norm(self.C[i, :])
             
-                # calcul de la différence temporelle
-                diff_temporelle = np.linalg.norm(self.C[i, :] - self.C[i-1, :])/np.linalg.norm(self.C[i, :])
-                
             
             
 

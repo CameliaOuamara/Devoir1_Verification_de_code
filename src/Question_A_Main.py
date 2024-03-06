@@ -26,12 +26,12 @@ critere_convergence = 1.0e-14
 critere_max_iter = 100
 
 # Pas d'espace
-N_vect = np.arange(6,10,1, dtype=int)
+N_vect = np.arange(4,8,1, dtype=int)
 N_vect = 5 * 2**N_vect
 delta_r_vect = R/(N_vect-1)
 
 # Pas de temps
-delta_t_vect = np.linspace(9,6, 4)
+delta_t_vect = np.linspace(11,9, 3)
 delta_t_vect = 10**delta_t_vect
 
 # Imposition du temps final de la simulation
@@ -50,19 +50,19 @@ Objet_Etude_Convergence = Etude_convergence_Comsol(delta_r_vect, delta_t_vect, N
 # -----------------------------------------------------------------------------------------------------------------
 #                                         Étude de convergence sur le pas d'espace
 # -----------------------------------------------------------------------------------------------------------------
-# Calcul de l'erreur
-erreur_vect_L1, erreur_vect_L2, erreur_vect_L_inf = Objet_Etude_Convergence.Boucle_Iterations_Espace()
+# # Calcul de l'erreur
+# erreur_vect_L1, erreur_vect_L2, erreur_vect_L_inf = Objet_Etude_Convergence.Boucle_Iterations_Espace()
 
-# Regression en loi de puissance
-Objet_regression = Regression_Loi_Puissance(erreur_vect_L1, erreur_vect_L2, erreur_vect_L_inf, schema, delta_r_vect, delta_t_vect)
-Objet_regression.Plot_Regression_Espace()
+# # Regression en loi de puissance
+# Objet_regression = Regression_Loi_Puissance(erreur_vect_L1, erreur_vect_L2, erreur_vect_L_inf, schema, delta_r_vect, delta_t_vect)
+# Objet_regression.Plot_Regression_Espace()
 # -----------------------------------------------------------------------------------------------------------------
 #                                         Étude de convergence sur le pas de temps
 # -----------------------------------------------------------------------------------------------------------------
 # Calcul de l'erreur
 erreur_vect_L1, erreur_vect_L2, erreur_vect_L_inf = Objet_Etude_Convergence.Boucle_Iterations_Temps()
 
-# Regression en loi de puissance
+#Regression en loi de puissance
 Objet_regression = Regression_Loi_Puissance(erreur_vect_L1, erreur_vect_L2, erreur_vect_L_inf, schema, delta_r_vect, delta_t_vect)
 Objet_regression.Plot_Regression_Temps()
 
@@ -78,11 +78,11 @@ Objet_Etude_Convergence = Etude_convergence_Comsol(delta_r_vect, delta_t_vect, N
 #                                         Étude de convergence sur le pas d'espace
 # -----------------------------------------------------------------------------------------------------------------
 # Calcul de l'erreur
-erreur_vect_L1, erreur_vect_L2, erreur_vect_L_inf = Objet_Etude_Convergence.Boucle_Iterations_Espace()
+# erreur_vect_L1, erreur_vect_L2, erreur_vect_L_inf = Objet_Etude_Convergence.Boucle_Iterations_Espace()
 
-# Regression en loi de puissance
-Objet_regression = Regression_Loi_Puissance(erreur_vect_L1, erreur_vect_L2, erreur_vect_L_inf, schema, delta_r_vect, delta_t_vect)
-Objet_regression.Plot_Regression_Espace()
+# # Regression en loi de puissance
+# Objet_regression = Regression_Loi_Puissance(erreur_vect_L1, erreur_vect_L2, erreur_vect_L_inf, schema, delta_r_vect, delta_t_vect)
+# Objet_regression.Plot_Regression_Espace()
 # -----------------------------------------------------------------------------------------------------------------
 #                                         Étude de convergence sur le pas de temps
 # -----------------------------------------------------------------------------------------------------------------

@@ -10,9 +10,18 @@ class Norme_Erreur_Discretisation () :
         self.u_numerique = solution_numerique
 
     def Calcul_Norme(self) :
-        
-        self.Erreur_L1 = np.mean(abs(self.u_numerique - self.u_exact))
-        self.Erreur_L2 = np.sqrt(np.mean((self.u_numerique - self.u_exact)*(self.u_numerique - self.u_exact)))
-        self.Erreur_Linf = np.max(abs(self.u_numerique - self.u_exact))
-        
-        return self.Erreur_L1, self.Erreur_L2, self.Erreur_Linf 
+        print("numerique")
+        print(self.u_numerique.shape)
+        print("exacte")
+        print(self.u_exact.shape)
+        matrice = self.u_numerique - self.u_exact
+        # Erreur_L1 = np.mean(np.mean(abs(self.u_numerique - self.u_exact), axis=0),axis=1)
+        # Erreur_L2 = np.sqrt(np.mean(np.mean((self.u_numerique - self.u_exact)*(self.u_numerique - self.u_exact)),axis=0),axis=1)
+        # Erreur_Linf = np.mean(np.max(abs(self.u_numerique - self.u_exact)))
+        Erreur_L1 = np.mean(np.mean(abs(matrice)))
+        Erreur_L2 = np.sqrt(np.mean(np.mean((matrice)*(matrice))))
+        Erreur_Linf = np.mean(np.max(abs(matrice)))
+        print(Erreur_L1)
+        print(Erreur_L2)
+        print(Erreur_Linf)
+        return Erreur_L1, Erreur_L2, Erreur_Linf 
