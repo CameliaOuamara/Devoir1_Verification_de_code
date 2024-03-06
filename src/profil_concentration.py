@@ -258,31 +258,31 @@ class Profil_Concentration_Centree_MNP(Profil_Concentration_Centree):
             C_out[0][ri] = val
         return C_out
         
-    def Matrice_A(self):
-        """
+    # def Matrice_A(self):
+    #     """
 
-        Returns
-        -------
-        Membre de gauche. Matrice A des coefficients
+    #     Returns
+    #     -------
+    #     Membre de gauche. Matrice A des coefficients
 
-        """
-        self.A = sp.sparse.lil_matrix((self.N,self.N))
-        self.A_inverse = np.zeros((self.N,self.N))
+    #     """
+    #     self.A = sp.sparse.lil_matrix((self.N,self.N))
+    #     self.A_inverse = np.zeros((self.N,self.N))
         
-        self.A[0,0]   = 1.0
+    #     self.A[0,0]   = 1.0
         
-        self.A[-1,-1] =  1.0
+    #     self.A[-1,-1] =  1.0
         
-        for i in range(1,self.N-1):
-            self.A[i, i-1]  = self.a - 0.5 * self.b/self.r[i]
+    #     for i in range(1,self.N-1):
+    #         self.A[i, i-1]  = self.a - 0.5 * self.b/self.r[i]
             
-            self.A[i, i]   = -2*self.a - self.e - self.k
+    #         self.A[i, i]   = -2*self.a - self.e - self.k
 
-            self.A[i, i+1] = self.a + 0.5 * self.b/self.r[i]
+    #         self.A[i, i+1] = self.a + 0.5 * self.b/self.r[i]
             
-        #storer l'inverse puisqu'elle ne change pas
-        self.A = self.A.tocsr()
-        self.A_inverse = sp.sparse.linalg.inv(self.A)
+    #     #storer l'inverse puisqu'elle ne change pas
+    #     self.A = self.A.tocsr()
+    #     self.A_inverse = sp.sparse.linalg.inv(self.A)
                 
     def Matrice_B(self, C_t):
         """
@@ -308,7 +308,7 @@ class Profil_Concentration_Centree_MNP(Profil_Concentration_Centree):
         
         self.B = sp.sparse.lil_matrix((self.N, 1))
         
-        self.B[0,0]  = c(self.t,self.r[0])[0][0]
+        self.B[0,0]  = dc_dt(self.t,self.r[0])[0][0]
         self.B[-1,0] = c(self.t,self.r[-1])[0][0]
         
         for i in range(1,self.N-1):
