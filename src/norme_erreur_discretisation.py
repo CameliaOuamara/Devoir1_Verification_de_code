@@ -43,23 +43,3 @@ class Norme_Erreur_Discretisation_MMS () :
         
      
         return self.Erreur_L1, self.Erreur_L2, self.Erreur_Linf 
-    
-    
-    
-class Norme_Erreur_Discretisation_MNP () :
-    def __init__(self, f_T_MMS, u_numerique, delta_t, R) :
-        self.f_T_MMS = f_T_MMS
-        self.u_numerique = u_numerique
-        self.delta_t = delta_t
-        self.R = R
-        self.t = np.linspace(0,(u_numerique.shape[0]-1)*delta_t, u_numerique.shape[0])
-        self.r = np.linspace(0,R,u_numerique.shape[1])
-
-    def Calcul_Norme(self) :
-        self.Erreur_matrice = abs(self.u_numerique - self.f_T_MMS(self.t, self.r))
-        self.Erreur_L1 = np.mean(abs(self.u_numerique - self.f_T_MMS(self.t, self.r)))
-        self.Erreur_L2 = np.sqrt(np.mean((self.u_numerique - self.f_T_MMS(self.t, self.r))*(self.u_numerique - self.f_T_MMS(self.t, self.r))))
-        self.Erreur_Linf = np.max(abs(self.u_numerique - self.f_T_MMS(self.t, self.r)))
-        
-     
-        return self.Erreur_L1, self.Erreur_L2, self.Erreur_Linf     

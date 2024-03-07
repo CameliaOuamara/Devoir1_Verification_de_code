@@ -28,7 +28,7 @@ from etude_convergence import *
 
 # Données 
 R = 0.5                                              # Rayon du cylindre [m]
-N = 400                                              # Nombre de points de discretisation [-]
+N = 100                                              # Nombre de points de discretisation [-]
 delta_r = R/(N-1)                                    # Taille de l'intervalle geometrique [m]
 D_eff = 1.0e-10                                      # Coefficient de diffusion effectif [m2/s]
 
@@ -39,404 +39,17 @@ delta_t = 0.01 * 0.5 * delta_r*delta_r / D_eff              # Pas de temps [s]
 critere_convergence = 1.0e-14                        # Critere sur la valeur de la concentration a l'iteration i vs i-1
 critere_max_iter = 1000                               # Nombre minimum d'iterations a realiser pour la convergence vers le regime permanent
 
-# # ----------------------------------------------------------------------------------------
-# #       MMS : Schéma 1 : Discretisation d'ordre 1 en temps et 1 en espace étude ordre spatial
-# # ----------------------------------------------------------------------------------------
-
-# plt.figure(0)
-
-# delta_t_MMS = 0.001
-# t_final = 1.0
-# N_vect = np.array([20, 40, 60, 80, 100])
-# delta_r_vect = R/(N_vect-1)
-# Objet_Etude_Convergence = Etude_Convergence_MMS_spatial(delta_r_vect, delta_t_MMS, N_vect, R, t_final, 1)
-# erreur_vect_L1, erreur_vect_L2, erreur_vect_L_inf = Objet_Etude_Convergence.Boucle_iterations()
-
-# plt.figure(1)
-
-# # Graphique log-log norme de l'erreur L1 vs delta_r
-# plt.loglog(delta_r_vect, erreur_vect_L1, '.r', label = "Norme L1")
-
-# # Ajuster une loi de puissance à toutes les valeurs (en utilisant np.polyfit avec logarithmes)
-# coefficients = np.polyfit(np.log(delta_r_vect), np.log(erreur_vect_L1), 1)
-# exponent_logreg = coefficients[0]
-# constant_logreg = coefficients[1]
-
-# # Fonction de régression en termes de logarithmes
-# fit_function_log = lambda x: exponent_logreg * x + constant_logreg
-
-# # Fonction de régression en termes originaux
-# fit_function = lambda x: np.exp(fit_function_log(np.log(x)))
-
-# # Extrapoler la valeur prédite pour la dernière valeur de h_values
-# extrapolated_value = fit_function(delta_r_vect[-1])
-# plt.loglog(delta_r_vect, fit_function(delta_r_vect), linestyle='--', color='r')
-
-# # Afficher l'équation de la régression en loi de puissance pour la norme L1
-# equation_text = f'$L_1 = {np.exp(constant_logreg):.4f} \\times Δr^{{{exponent_logreg:.4f}}}$'
-# equation_text_obj = plt.text(0.5, 0.05, equation_text, fontsize=12, transform=plt.gca().transAxes, color='k')
-
-# # Graphique log-log norme de l'erreur L2 vs delta_r
-# plt.loglog(delta_r_vect, erreur_vect_L2, '.g', label = "Norme L2")
-
-# # Ajuster une loi de puissance à toutes les valeurs (en utilisant np.polyfit avec logarithmes)
-# coefficients = np.polyfit(np.log(delta_r_vect), np.log(erreur_vect_L2), 1)
-# exponent_logreg = coefficients[0]
-# constant_logreg = coefficients[1]
-
-# # Fonction de régression en termes de logarithmes
-# fit_function_log = lambda x: exponent_logreg * x + constant_logreg
-
-# # Fonction de régression en termes originaux
-# fit_function = lambda x: np.exp(fit_function_log(np.log(x)))
-
-# # Extrapoler la valeur prédite pour la dernière valeur de h_values
-# extrapolated_value = fit_function(delta_r_vect[-1])
-# plt.loglog(delta_r_vect, fit_function(delta_r_vect), linestyle='--', color='g')
-
-# # Afficher l'équation de la régression en loi de puissance pour la norme L1
-# equation_text = f'$L_2 = {np.exp(constant_logreg):.4f} \\times Δr^{{{exponent_logreg:.4f}}}$'
-# equation_text_obj = plt.text(0.5, 0.15, equation_text, fontsize=12, transform=plt.gca().transAxes, color='k')
-
-# # Graphique log-log norme de l'erreur Linf vs delta_r
-# plt.loglog(delta_r_vect, erreur_vect_L_inf, '.m', label='Norme $L_\infty$')
-
-# # Ajuster une loi de puissance à toutes les valeurs (en utilisant np.polyfit avec logarithmes)
-# coefficients = np.polyfit(np.log(delta_r_vect), np.log(erreur_vect_L_inf), 1)
-# exponent_logreg = coefficients[0]
-# constant_logreg = coefficients[1]
-
-# # Fonction de régression en termes de logarithmes
-# fit_function_log = lambda x: exponent_logreg * x + constant_logreg
-
-# # Fonction de régression en termes originaux
-# fit_function = lambda x: np.exp(fit_function_log(np.log(x)))
-
-# # Extrapoler la valeur prédite pour la dernière valeur de h_values
-# extrapolated_value = fit_function(delta_r_vect[-1])
-# plt.loglog(delta_r_vect, fit_function(delta_r_vect), linestyle='--', color='m')
-
-# # Afficher l'équation de la régression en loi de puissance pour la norme Linf
-# equation_text = f'$L_\infty = {np.exp(constant_logreg):.4f} \\times Δr^{{{exponent_logreg:.4f}}}$'
-# equation_text_obj = plt.text(0.5, 0.25, equation_text, fontsize=12, transform=plt.gca().transAxes, color='k')
-
-# plt.xlabel("$\Delta$r")
-# plt.ylabel("Norme de l'erreur")
-# plt.legend()
-# plt.grid()
-# plt.title("Normes des erreurs L1, L2 et $L_\infty$ avec schéma d'ordre 1 en \n fonction de $\Delta$r avec méthode MMS")
-# plt.savefig("Norme_des_erreurs_Schema_1_MMS_Spatial.png")
-# plt.show()
-
-
-# #%%
-# # ----------------------------------------------------------------------------------------
-# #          MMS : Schéma 2 : Discretisation d'ordre 1 en temps et 2 en espace étude ordre spatial
-# # ----------------------------------------------------------------------------------------
-
-# plt.figure(2)
-
-# Objet_Etude_Convergence = Etude_Convergence_MMS_spatial(delta_r_vect, delta_t_MMS, N_vect, R, t_final, 2)
-# erreur_vect_L1_Centree, erreur_vect_L2_Centree, erreur_vect_L_inf_Centree = Objet_Etude_Convergence.Boucle_iterations()    
-
-# plt.figure(3)
-
-# # Graphique log-log norme de l'erreur L1 vs delta_r
-# plt.loglog(delta_r_vect, erreur_vect_L1_Centree, '.r', label = "Norme L1")
-
-# # Ajuster une loi de puissance à toutes les valeurs (en utilisant np.polyfit avec logarithmes)
-# coefficients = np.polyfit(np.log(delta_r_vect), np.log(erreur_vect_L1_Centree), 1)
-# exponent_logreg = coefficients[0]
-# constant_logreg = coefficients[1]
-
-# # Fonction de régression en termes de logarithmes
-# fit_function_log = lambda x: exponent_logreg * x + constant_logreg
-
-# # Fonction de régression en termes originaux
-# fit_function = lambda x: np.exp(fit_function_log(np.log(x)))
-
-# # Extrapoler la valeur prédite pour la dernière valeur de h_values
-# extrapolated_value = fit_function(delta_r_vect[-1])
-# plt.loglog(delta_r_vect, fit_function(delta_r_vect), linestyle='--', color='r')
-
-# # Afficher l'équation de la régression en loi de puissance pour la norme L1
-# equation_text = f'$L_1 = {np.exp(constant_logreg):.4f} \\times Δr^{{{exponent_logreg:.4f}}}$'
-# equation_text_obj = plt.text(0.5, 0.05, equation_text, fontsize=12, transform=plt.gca().transAxes, color='k')
-
-# # Graphique log-log norme de l'erreur L2 vs delta_r
-# plt.loglog(delta_r_vect, erreur_vect_L2_Centree, '.g', label = "Nomre L2")
-
-# # Ajuster une loi de puissance à toutes les valeurs (en utilisant np.polyfit avec logarithmes)
-# coefficients = np.polyfit(np.log(delta_r_vect), np.log(erreur_vect_L2_Centree), 1)
-# exponent_logreg = coefficients[0]
-# constant_logreg = coefficients[1]
-
-# # Fonction de régression en termes de logarithmes
-# fit_function_log = lambda x: exponent_logreg * x + constant_logreg
-
-# # Fonction de régression en termes originaux
-# fit_function = lambda x: np.exp(fit_function_log(np.log(x)))
-
-# # Extrapoler la valeur prédite pour la dernière valeur de h_values
-# extrapolated_value = fit_function(delta_r_vect[-1])
-# plt.loglog(delta_r_vect, fit_function(delta_r_vect), linestyle='--', color='g')
-
-# # Afficher l'équation de la régression en loi de puissance pour la norme L2
-# equation_text = f'$L_2 = {np.exp(constant_logreg):.4f} \\times Δr^{{{exponent_logreg:.4f}}}$'
-# equation_text_obj = plt.text(0.5, 0.15, equation_text, fontsize=12, transform=plt.gca().transAxes, color='k')
-
-# # Graphique log-log norme de l'erreur Linf vs delta_r
-# plt.loglog(delta_r_vect, erreur_vect_L_inf_Centree, '.m', label = "Norme $L_\infty$")
-
-# # Ajuster une loi de puissance à toutes les valeurs (en utilisant np.polyfit avec logarithmes)
-# coefficients = np.polyfit(np.log(delta_r_vect), np.log(erreur_vect_L_inf_Centree), 1)
-# exponent_logreg = coefficients[0]
-# constant_logreg = coefficients[1]
-
-# # Fonction de régression en termes de logarithmes
-# fit_function_log = lambda x: exponent_logreg * x + constant_logreg
-
-# # Fonction de régression en termes originaux
-# fit_function = lambda x: np.exp(fit_function_log(np.log(x)))
-
-# # Extrapoler la valeur prédite pour la dernière valeur de h_values
-# extrapolated_value = fit_function(delta_r_vect[-1])
-# plt.loglog(delta_r_vect, fit_function(delta_r_vect), linestyle='--', color='m')
-
-# # Afficher l'équation de la régression en loi de puissance pour la norme Linf
-# equation_text = f'$L_\infty = {np.exp(constant_logreg):.4f} \\times Δr^{{{exponent_logreg:.4f}}}$'
-# equation_text_obj = plt.text(0.5, 0.25, equation_text, fontsize=12, transform=plt.gca().transAxes, color='k')
-
-
-# plt.xlabel("$\Delta$r")
-# plt.ylabel("Norme de l'erreur")
-# plt.legend()
-# plt.grid()
-# plt.title("Normes des erreurs L1, L2 et $L_\infty$ avec schéma d'ordre 2 en \n fonction de $\Delta$r avec méthode MMS")
-# plt.savefig("Norme_des_erreurs_Schema_2_MMS_Spatial.png")
-# plt.show()
-
-# # ----------------------------------------------------------------------------------------
-# #       MMS : Schéma 1 : Discretisation d'ordre 1 en temps et 1 en espace étude ordre temporel
-# # ----------------------------------------------------------------------------------------
-
-# plt.figure(4)
-
-# delta_t_vect = np.array([0.05, 0.025, 0.01, 0.005, 0.001])
-# t_final = 1.0
-# Objet_Etude_Convergence = Etude_Convergence_MMS_temporel(delta_r, delta_t_vect, N, R, t_final, 1)
-# erreur_vect_L1, erreur_vect_L2, erreur_vect_L_inf = Objet_Etude_Convergence.Boucle_iterations()
-
-# plt.figure(5)
-
-# # Graphique log-log norme de l'erreur L1 vs delta_t
-# plt.loglog(delta_t_vect, erreur_vect_L1, '.r', label = "Norme L1")
-
-# # Ajuster une loi de puissance à toutes les valeurs (en utilisant np.polyfit avec logarithmes)
-# coefficients = np.polyfit(np.log(delta_t_vect), np.log(erreur_vect_L1), 1)
-# exponent_logreg = coefficients[0]
-# constant_logreg = coefficients[1]
-
-# # Fonction de régression en termes de logarithmes
-# fit_function_log = lambda x: exponent_logreg * x + constant_logreg
-
-# # Fonction de régression en termes originaux
-# fit_function = lambda x: np.exp(fit_function_log(np.log(x)))
-
-# # Extrapoler la valeur prédite pour la dernière valeur de h_values
-# extrapolated_value = fit_function(delta_t_vect[-1])
-# plt.loglog(delta_t_vect, fit_function(delta_t_vect), linestyle='--', color='r')
-
-# # Afficher l'équation de la régression en loi de puissance pour la norme L1
-# equation_text = f'$L_1 = {np.exp(constant_logreg):.4f} \\times Δt^{{{exponent_logreg:.4f}}}$'
-# equation_text_obj = plt.text(0.5, 0.05, equation_text, fontsize=12, transform=plt.gca().transAxes, color='k')
-
-# # Graphique log-log norme de l'erreur L2 vs delta_t
-# plt.loglog(delta_t_vect, erreur_vect_L2, '.g', label = "Norme L2")
-
-# # Ajuster une loi de puissance à toutes les valeurs (en utilisant np.polyfit avec logarithmes)
-# coefficients = np.polyfit(np.log(delta_t_vect), np.log(erreur_vect_L2), 1)
-# exponent_logreg = coefficients[0]
-# constant_logreg = coefficients[1]
-
-# # Fonction de régression en termes de logarithmes
-# fit_function_log = lambda x: exponent_logreg * x + constant_logreg
-
-# # Fonction de régression en termes originaux
-# fit_function = lambda x: np.exp(fit_function_log(np.log(x)))
-
-# # Extrapoler la valeur prédite pour la dernière valeur de h_values
-# extrapolated_value = fit_function(delta_t_vect[-1])
-# plt.loglog(delta_t_vect, fit_function(delta_t_vect), linestyle='--', color='g')
-
-# # Afficher l'équation de la régression en loi de puissance pour la norme L1
-# equation_text = f'$L_2 = {np.exp(constant_logreg):.4f} \\times Δt^{{{exponent_logreg:.4f}}}$'
-# equation_text_obj = plt.text(0.5, 0.15, equation_text, fontsize=12, transform=plt.gca().transAxes, color='k')
-
-# # Graphique log-log norme de l'erreur Linf vs delta_t
-# plt.loglog(delta_t_vect, erreur_vect_L_inf, '.m', label='Norme $L_\infty$')
-
-# # Ajuster une loi de puissance à toutes les valeurs (en utilisant np.polyfit avec logarithmes)
-# coefficients = np.polyfit(np.log(delta_t_vect), np.log(erreur_vect_L_inf), 1)
-# exponent_logreg = coefficients[0]
-# constant_logreg = coefficients[1]
-
-# # Fonction de régression en termes de logarithmes
-# fit_function_log = lambda x: exponent_logreg * x + constant_logreg
-
-# # Fonction de régression en termes originaux
-# fit_function = lambda x: np.exp(fit_function_log(np.log(x)))
-
-# # Extrapoler la valeur prédite pour la dernière valeur de h_values
-# extrapolated_value = fit_function(delta_t_vect[-1])
-# plt.loglog(delta_t_vect, fit_function(delta_t_vect), linestyle='--', color='m')
-
-# # Afficher l'équation de la régression en loi de puissance pour la norme Linf
-# equation_text = f'$L_\infty = {np.exp(constant_logreg):.4f} \\times Δt^{{{exponent_logreg:.4f}}}$'
-# equation_text_obj = plt.text(0.5, 0.25, equation_text, fontsize=12, transform=plt.gca().transAxes, color='k')
-
-# plt.xlabel("$\Delta$t")
-# plt.ylabel("Norme de l'erreur")
-# plt.legend()
-# plt.grid()
-# plt.title("Normes des erreurs L1, L2 et $L_\infty$ avec schéma d'ordre 1 en \n fonction de $\Delta$t avec méthode MMS")
-# plt.savefig("Norme_des_erreurs_Schema_1_MMS_Temp.png")
-# plt.show()
-
-# #%%
-# # ----------------------------------------------------------------------------------------
-# #          MMS : Schéma 2 : Discretisation d'ordre 1 en temps et 2 en espace étude ordre temporel
-# # ----------------------------------------------------------------------------------------
-
-# plt.figure(6)
-
-# Objet_Etude_Convergence = Etude_Convergence_MMS_temporel(delta_r, delta_t_vect, N, R, t_final, 2)
-# erreur_vect_L1_Centree, erreur_vect_L2_Centree, erreur_vect_L_inf_Centree = Objet_Etude_Convergence.Boucle_iterations()    
-
-# plt.figure(7)
-
-# # Graphique log-log norme de l'erreur L1 vs delta_t
-# plt.loglog(delta_t_vect, erreur_vect_L1_Centree, '.r', label = "Norme L1")
-
-# # Ajuster une loi de puissance à toutes les valeurs (en utilisant np.polyfit avec logarithmes)
-# coefficients = np.polyfit(np.log(delta_t_vect), np.log(erreur_vect_L1_Centree), 1)
-# exponent_logreg = coefficients[0]
-# constant_logreg = coefficients[1]
-
-# # Fonction de régression en termes de logarithmes
-# fit_function_log = lambda x: exponent_logreg * x + constant_logreg
-
-# # Fonction de régression en termes originaux
-# fit_function = lambda x: np.exp(fit_function_log(np.log(x)))
-
-# # Extrapoler la valeur prédite pour la dernière valeur de h_values
-# extrapolated_value = fit_function(delta_t_vect[-1])
-# plt.loglog(delta_t_vect, fit_function(delta_t_vect), linestyle='--', color='r')
-
-# # Afficher l'équation de la régression en loi de puissance pour la norme L1
-# equation_text = f'$L_1 = {np.exp(constant_logreg):.4f} \\times Δt^{{{exponent_logreg:.4f}}}$'
-# equation_text_obj = plt.text(0.5, 0.05, equation_text, fontsize=12, transform=plt.gca().transAxes, color='k')
-
-# # Graphique log-log norme de l'erreur L2 vs delta_t
-# plt.loglog(delta_t_vect, erreur_vect_L2_Centree, '.g', label = "Nomre L2")
-
-# # Ajuster une loi de puissance à toutes les valeurs (en utilisant np.polyfit avec logarithmes)
-# coefficients = np.polyfit(np.log(delta_t_vect), np.log(erreur_vect_L2_Centree), 1)
-# exponent_logreg = coefficients[0]
-# constant_logreg = coefficients[1]
-
-# # Fonction de régression en termes de logarithmes
-# fit_function_log = lambda x: exponent_logreg * x + constant_logreg
-
-# # Fonction de régression en termes originaux
-# fit_function = lambda x: np.exp(fit_function_log(np.log(x)))
-
-# # Extrapoler la valeur prédite pour la dernière valeur de h_values
-# extrapolated_value = fit_function(delta_t_vect[-1])
-# plt.loglog(delta_t_vect, fit_function(delta_t_vect), linestyle='--', color='g')
-
-# # Afficher l'équation de la régression en loi de puissance pour la norme L2
-# equation_text = f'$L_2 = {np.exp(constant_logreg):.4f} \\times Δt^{{{exponent_logreg:.4f}}}$'
-# equation_text_obj = plt.text(0.5, 0.15, equation_text, fontsize=12, transform=plt.gca().transAxes, color='k')
-
-# # Graphique log-log norme de l'erreur Linf vs delta_t
-# plt.loglog(delta_t_vect, erreur_vect_L_inf_Centree, '.m', label = "Norme $L_\infty$")
-
-# # Ajuster une loi de puissance à toutes les valeurs (en utilisant np.polyfit avec logarithmes)
-# coefficients = np.polyfit(np.log(delta_t_vect), np.log(erreur_vect_L_inf_Centree), 1)
-# exponent_logreg = coefficients[0]
-# constant_logreg = coefficients[1]
-
-# # Fonction de régression en termes de logarithmes
-# fit_function_log = lambda x: exponent_logreg * x + constant_logreg
-
-# # Fonction de régression en termes originaux
-# fit_function = lambda x: np.exp(fit_function_log(np.log(x)))
-
-# # Extrapoler la valeur prédite pour la dernière valeur de h_values
-# extrapolated_value = fit_function(delta_t_vect[-1])
-# plt.loglog(delta_t_vect, fit_function(delta_t_vect), linestyle='--', color='m')
-
-# # Afficher l'équation de la régression en loi de puissance pour la norme Linf
-# equation_text = f'$L_\infty = {np.exp(constant_logreg):.4f} \\times Δt^{{{exponent_logreg:.4f}}}$'
-# equation_text_obj = plt.text(0.5, 0.25, equation_text, fontsize=12, transform=plt.gca().transAxes, color='k')
-
-# plt.xlabel("$\Delta$t")
-# plt.ylabel("Norme de l'erreur")
-# plt.legend()
-# plt.grid()
-# plt.title("Normes des erreurs L1, L2 et $L_\infty$ avec schéma d'ordre 2 en \n fonction de $\Delta$t avec méthode MMS")
-# plt.savefig("Norme_des_erreurs_Schema_2_MMS_Temp.png")
-# plt.show()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# -----------------------------------------------------------------------------------------------------------------
-#                           Solution avec le maillage le plus fin (pour MNP), Schéma 1, étude spatial
-# -----------------------------------------------------------------------------------------------------------------
-Deff = 1.0e9
-k = 4.0e9
-N_vect = np.array([10,20,30,40,50])
-delta_r_vect = R/(N_vect-1)
-delta_t_MNP = 0.01 * 0.5 * delta_r_vect*delta_r_vect / Deff
-sol_MNP_spatial = Profil_Concentration(delta_r, delta_t_MNP[-1], N, R, critere_convergence, critere_max_iter, Deff, k)
-sol_MNP_spatial.Algorithme_Resolution()
-nb_time_step = sol_MNP_spatial.C.shape[0]
-r_fine_mesh_spatial = np.linspace(0, R, sol_MNP_spatial.C.shape[1])
-t_fine_mesh_spatial = np.linspace(0, delta_t_MNP[-1]*(nb_time_step-1), nb_time_step)
-spline_bicubic_spatial = sp.interpolate.RectBivariateSpline(t_fine_mesh_spatial, r_fine_mesh_spatial, sol_MNP_spatial.C[:,:])
-
-
-# -----------------------------------------------------------------------------------------------------------------
-#                           Solution avec le maillage le plus fin (pour MNP), Schéma 2, étude spatial
-# -----------------------------------------------------------------------------------------------------------------
-sol_MNP_Centree_spatial = Profil_Concentration_Centree(delta_r, delta_t_MNP[-1], N, R, critere_convergence, critere_max_iter, Deff, k)
-sol_MNP_Centree_spatial.Algorithme_Resolution()
-nb_time_step = sol_MNP_Centree_spatial.C.shape[0]
-r_fine_mesh_Centree_spatial = np.linspace(0, R, sol_MNP_Centree_spatial.C.shape[1])
-t_fine_mesh_Centree_spatial = np.linspace(0, delta_t_MNP[-1]*(nb_time_step-1), nb_time_step)
-spline_bicubic_Centree_spatial = sp.interpolate.RectBivariateSpline(t_fine_mesh_Centree_spatial, r_fine_mesh_Centree_spatial, sol_MNP_Centree_spatial.C[:,:])
-
 # ----------------------------------------------------------------------------------------
-#       MNP : Schéma 1 : Discretisation d'ordre 1 en temps et 1 en espace étude ordre spatial
+#       MMS : Schéma 1 : Discretisation d'ordre 1 en temps et 1 en espace étude ordre spatial
 # ----------------------------------------------------------------------------------------
 
 plt.figure(0)
 
-t_final = t_fine_mesh_spatial[-1]
-
-Objet_Etude_Convergence = Etude_Convergence_MNP_spatial(delta_r_vect, delta_t_MNP[-1], N_vect, R, t_final, 1, spline_bicubic_spatial)
+delta_t_MMS = 0.001
+t_final = 1.0
+N_vect = np.array([20, 40, 60, 80, 100])
+delta_r_vect = R/(N_vect-1)
+Objet_Etude_Convergence = Etude_Convergence_MMS_spatial(delta_r_vect, delta_t_MMS, N_vect, R, t_final, 1)
 erreur_vect_L1, erreur_vect_L2, erreur_vect_L_inf = Objet_Etude_Convergence.Boucle_iterations()
 
 plt.figure(1)
@@ -511,20 +124,19 @@ plt.xlabel("$\Delta$r")
 plt.ylabel("Norme de l'erreur")
 plt.legend()
 plt.grid()
-plt.title("Normes des erreurs L1, L2 et $L_\infty$ avec schéma d'ordre 1 en \n fonction de $\Delta$r avec méthode MNP")
-plt.savefig("Norme_des_erreurs_Schema_1_MMS_Spatial.png")
+plt.title("Normes des erreurs L1, L2 et $L_\infty$ avec schéma d'ordre 1 en \n fonction de $\Delta$r avec méthode MMS")
+plt.savefig("Norme_des_erreurs_Schema_1_MMS_Spatial.png", dpi=700)
 plt.show()
 
 
 #%%
 # ----------------------------------------------------------------------------------------
-#          MNP : Schéma 2 : Discretisation d'ordre 1 en temps et 2 en espace étude ordre spatial
+#          MMS : Schéma 2 : Discretisation d'ordre 1 en temps et 2 en espace étude ordre spatial
 # ----------------------------------------------------------------------------------------
 
 plt.figure(2)
 
-t_final = t_fine_mesh_Centree_spatial[-1]
-Objet_Etude_Convergence = Etude_Convergence_MNP_spatial(delta_r_vect, delta_t_MNP[-1], N_vect, R, t_final, 2, spline_bicubic_Centree_spatial)
+Objet_Etude_Convergence = Etude_Convergence_MMS_spatial(delta_r_vect, delta_t_MMS, N_vect, R, t_final, 2)
 erreur_vect_L1_Centree, erreur_vect_L2_Centree, erreur_vect_L_inf_Centree = Objet_Etude_Convergence.Boucle_iterations()    
 
 plt.figure(3)
@@ -600,52 +212,28 @@ plt.xlabel("$\Delta$r")
 plt.ylabel("Norme de l'erreur")
 plt.legend()
 plt.grid()
-plt.title("Normes des erreurs L1, L2 et $L_\infty$ avec schéma d'ordre 2 en \n fonction de $\Delta$r avec méthode MNP")
-plt.savefig("Norme_des_erreurs_Schema_2_MMS_Spatial.png")
+plt.title("Normes des erreurs L1, L2 et $L_\infty$ avec schéma d'ordre 2 en \n fonction de $\Delta$r avec méthode MMS")
+plt.savefig("Norme_des_erreurs_Schema_2_MMS_Spatial.png", dpi=700)
 plt.show()
 
-# -----------------------------------------------------------------------------------------------------------------
-#                           Solution avec le maillage le plus fin (pour MNP), Schéma 1, étude temporel
-# -----------------------------------------------------------------------------------------------------------------
-Deff = 1.0e-9
-k = 4.0e-9
-delta_t_MNP = 0.01 * 0.5 * delta_r_vect*delta_r_vect / Deff
-sol_MNP_temporel = Profil_Concentration(delta_r, delta_t_MNP[-1], N, R, critere_convergence, critere_max_iter, Deff, k)
-sol_MNP_temporel.Algorithme_Resolution()
-nb_time_step = sol_MNP_temporel.C.shape[0]
-r_fine_mesh_temporel = np.linspace(0, R, sol_MNP_temporel.C.shape[1])
-t_fine_mesh_temporel = np.linspace(0, delta_t_MNP[-1]*(nb_time_step-1), nb_time_step)
-spline_bicubic_temporel = sp.interpolate.RectBivariateSpline(t_fine_mesh_temporel, r_fine_mesh_temporel, sol_MNP_temporel.C[:,:])
-
-
-# -----------------------------------------------------------------------------------------------------------------
-#                           Solution avec le maillage le plus fin (pour MNP), Schéma 2, étude temporel
-# -----------------------------------------------------------------------------------------------------------------
-sol_MNP_Centree_temporel = Profil_Concentration_Centree(delta_r, delta_t_MNP[-1], N, R, critere_convergence, critere_max_iter, Deff, k)
-sol_MNP_Centree_temporel.Algorithme_Resolution()
-nb_time_step = sol_MNP_Centree_temporel.C.shape[0]
-r_fine_mesh_Centree_temporel = np.linspace(0, R, sol_MNP_Centree_temporel.C.shape[1])
-t_fine_mesh_Centree_temporel = np.linspace(0, delta_t_MNP[-1]*(nb_time_step-1), nb_time_step)
-spline_bicubic_Centree_temporel = sp.interpolate.RectBivariateSpline(t_fine_mesh_Centree_temporel, r_fine_mesh_Centree_temporel, sol_MNP_Centree_temporel.C[:,:])
-
-
 # ----------------------------------------------------------------------------------------
-#       MNP : Schéma 1 : Discretisation d'ordre 1 en temps et 1 en espace étude ordre temporel
+#       MMS : Schéma 1 : Discretisation d'ordre 1 en temps et 1 en espace étude ordre temporel
 # ----------------------------------------------------------------------------------------
 
 plt.figure(4)
-delta_t_MNP = delta_t_MNP*8
-t_final = t_fine_mesh_temporel[-1]
-Objet_Etude_Convergence = Etude_Convergence_MNP_temporel(delta_r, delta_t_MNP, N, R, t_final, 1, spline_bicubic_temporel)
+
+delta_t_vect = np.array([0.05, 0.025, 0.01, 0.005, 0.001])
+t_final = 1.0
+Objet_Etude_Convergence = Etude_Convergence_MMS_temporel(delta_r, delta_t_vect, N, R, t_final, 1)
 erreur_vect_L1, erreur_vect_L2, erreur_vect_L_inf = Objet_Etude_Convergence.Boucle_iterations()
 
 plt.figure(5)
 
 # Graphique log-log norme de l'erreur L1 vs delta_t
-plt.loglog(delta_t_MNP, erreur_vect_L1, '.r', label = "Norme L1")
+plt.loglog(delta_t_vect, erreur_vect_L1, '.r', label = "Norme L1")
 
 # Ajuster une loi de puissance à toutes les valeurs (en utilisant np.polyfit avec logarithmes)
-coefficients = np.polyfit(np.log(delta_t_MNP), np.log(erreur_vect_L1), 1)
+coefficients = np.polyfit(np.log(delta_t_vect), np.log(erreur_vect_L1), 1)
 exponent_logreg = coefficients[0]
 constant_logreg = coefficients[1]
 
@@ -656,18 +244,18 @@ fit_function_log = lambda x: exponent_logreg * x + constant_logreg
 fit_function = lambda x: np.exp(fit_function_log(np.log(x)))
 
 # Extrapoler la valeur prédite pour la dernière valeur de h_values
-extrapolated_value = fit_function(delta_t_MNP[-1])
-plt.loglog(delta_t_MNP, fit_function(delta_t_MNP), linestyle='--', color='r')
+extrapolated_value = fit_function(delta_t_vect[-1])
+plt.loglog(delta_t_vect, fit_function(delta_t_vect), linestyle='--', color='r')
 
 # Afficher l'équation de la régression en loi de puissance pour la norme L1
 equation_text = f'$L_1 = {np.exp(constant_logreg):.4f} \\times Δt^{{{exponent_logreg:.4f}}}$'
 equation_text_obj = plt.text(0.5, 0.05, equation_text, fontsize=12, transform=plt.gca().transAxes, color='k')
 
 # Graphique log-log norme de l'erreur L2 vs delta_t
-plt.loglog(delta_t_MNP, erreur_vect_L2, '.g', label = "Norme L2")
+plt.loglog(delta_t_vect, erreur_vect_L2, '.g', label = "Norme L2")
 
 # Ajuster une loi de puissance à toutes les valeurs (en utilisant np.polyfit avec logarithmes)
-coefficients = np.polyfit(np.log(delta_t_MNP), np.log(erreur_vect_L2), 1)
+coefficients = np.polyfit(np.log(delta_t_vect), np.log(erreur_vect_L2), 1)
 exponent_logreg = coefficients[0]
 constant_logreg = coefficients[1]
 
@@ -678,18 +266,18 @@ fit_function_log = lambda x: exponent_logreg * x + constant_logreg
 fit_function = lambda x: np.exp(fit_function_log(np.log(x)))
 
 # Extrapoler la valeur prédite pour la dernière valeur de h_values
-extrapolated_value = fit_function(delta_t_MNP[-1])
-plt.loglog(delta_t_MNP, fit_function(delta_t_MNP), linestyle='--', color='g')
+extrapolated_value = fit_function(delta_t_vect[-1])
+plt.loglog(delta_t_vect, fit_function(delta_t_vect), linestyle='--', color='g')
 
 # Afficher l'équation de la régression en loi de puissance pour la norme L1
 equation_text = f'$L_2 = {np.exp(constant_logreg):.4f} \\times Δt^{{{exponent_logreg:.4f}}}$'
 equation_text_obj = plt.text(0.5, 0.15, equation_text, fontsize=12, transform=plt.gca().transAxes, color='k')
 
 # Graphique log-log norme de l'erreur Linf vs delta_t
-plt.loglog(delta_t_MNP, erreur_vect_L_inf, '.m', label='Norme $L_\infty$')
+plt.loglog(delta_t_vect, erreur_vect_L_inf, '.m', label='Norme $L_\infty$')
 
 # Ajuster une loi de puissance à toutes les valeurs (en utilisant np.polyfit avec logarithmes)
-coefficients = np.polyfit(np.log(delta_t_MNP), np.log(erreur_vect_L_inf), 1)
+coefficients = np.polyfit(np.log(delta_t_vect), np.log(erreur_vect_L_inf), 1)
 exponent_logreg = coefficients[0]
 constant_logreg = coefficients[1]
 
@@ -700,8 +288,8 @@ fit_function_log = lambda x: exponent_logreg * x + constant_logreg
 fit_function = lambda x: np.exp(fit_function_log(np.log(x)))
 
 # Extrapoler la valeur prédite pour la dernière valeur de h_values
-extrapolated_value = fit_function(delta_t_MNP[-1])
-plt.loglog(delta_t_MNP, fit_function(delta_t_MNP), linestyle='--', color='m')
+extrapolated_value = fit_function(delta_t_vect[-1])
+plt.loglog(delta_t_vect, fit_function(delta_t_vect), linestyle='--', color='m')
 
 # Afficher l'équation de la régression en loi de puissance pour la norme Linf
 equation_text = f'$L_\infty = {np.exp(constant_logreg):.4f} \\times Δt^{{{exponent_logreg:.4f}}}$'
@@ -711,28 +299,27 @@ plt.xlabel("$\Delta$t")
 plt.ylabel("Norme de l'erreur")
 plt.legend()
 plt.grid()
-plt.title("Normes des erreurs L1, L2 et $L_\infty$ avec schéma d'ordre 1 en \n fonction de $\Delta$t avec méthode MNP")
-plt.savefig("Norme_des_erreurs_Schema_1_MMS_Temp.png")
+plt.title("Normes des erreurs L1, L2 et $L_\infty$ avec schéma d'ordre 1 en \n fonction de $\Delta$t avec méthode MMS")
+plt.savefig("Norme_des_erreurs_Schema_1_MMS_Temp.png", dpi=700)
 plt.show()
 
 #%%
 # ----------------------------------------------------------------------------------------
-#          MNP : Schéma 2 : Discretisation d'ordre 1 en temps et 2 en espace étude ordre temporel
+#          MMS : Schéma 2 : Discretisation d'ordre 1 en temps et 2 en espace étude ordre temporel
 # ----------------------------------------------------------------------------------------
 
 plt.figure(6)
 
-t_final = t_fine_mesh_Centree_temporel[-1]
-Objet_Etude_Convergence = Etude_Convergence_MNP_temporel(delta_r, delta_t_MNP, N, R, t_final, 2, spline_bicubic_Centree_temporel)
+Objet_Etude_Convergence = Etude_Convergence_MMS_temporel(delta_r, delta_t_vect, N, R, t_final, 2)
 erreur_vect_L1_Centree, erreur_vect_L2_Centree, erreur_vect_L_inf_Centree = Objet_Etude_Convergence.Boucle_iterations()    
 
 plt.figure(7)
 
 # Graphique log-log norme de l'erreur L1 vs delta_t
-plt.loglog(delta_t_MNP, erreur_vect_L1_Centree, '.r', label = "Norme L1")
+plt.loglog(delta_t_vect, erreur_vect_L1_Centree, '.r', label = "Norme L1")
 
 # Ajuster une loi de puissance à toutes les valeurs (en utilisant np.polyfit avec logarithmes)
-coefficients = np.polyfit(np.log(delta_t_MNP), np.log(erreur_vect_L1_Centree), 1)
+coefficients = np.polyfit(np.log(delta_t_vect), np.log(erreur_vect_L1_Centree), 1)
 exponent_logreg = coefficients[0]
 constant_logreg = coefficients[1]
 
@@ -743,18 +330,18 @@ fit_function_log = lambda x: exponent_logreg * x + constant_logreg
 fit_function = lambda x: np.exp(fit_function_log(np.log(x)))
 
 # Extrapoler la valeur prédite pour la dernière valeur de h_values
-extrapolated_value = fit_function(delta_t_MNP[-1])
-plt.loglog(delta_t_MNP, fit_function(delta_t_MNP), linestyle='--', color='r')
+extrapolated_value = fit_function(delta_t_vect[-1])
+plt.loglog(delta_t_vect, fit_function(delta_t_vect), linestyle='--', color='r')
 
 # Afficher l'équation de la régression en loi de puissance pour la norme L1
 equation_text = f'$L_1 = {np.exp(constant_logreg):.4f} \\times Δt^{{{exponent_logreg:.4f}}}$'
 equation_text_obj = plt.text(0.5, 0.05, equation_text, fontsize=12, transform=plt.gca().transAxes, color='k')
 
 # Graphique log-log norme de l'erreur L2 vs delta_t
-plt.loglog(delta_t_MNP, erreur_vect_L2_Centree, '.g', label = "Nomre L2")
+plt.loglog(delta_t_vect, erreur_vect_L2_Centree, '.g', label = "Nomre L2")
 
 # Ajuster une loi de puissance à toutes les valeurs (en utilisant np.polyfit avec logarithmes)
-coefficients = np.polyfit(np.log(delta_t_MNP), np.log(erreur_vect_L2_Centree), 1)
+coefficients = np.polyfit(np.log(delta_t_vect), np.log(erreur_vect_L2_Centree), 1)
 exponent_logreg = coefficients[0]
 constant_logreg = coefficients[1]
 
@@ -765,18 +352,18 @@ fit_function_log = lambda x: exponent_logreg * x + constant_logreg
 fit_function = lambda x: np.exp(fit_function_log(np.log(x)))
 
 # Extrapoler la valeur prédite pour la dernière valeur de h_values
-extrapolated_value = fit_function(delta_t_MNP[-1])
-plt.loglog(delta_t_MNP, fit_function(delta_t_MNP), linestyle='--', color='g')
+extrapolated_value = fit_function(delta_t_vect[-1])
+plt.loglog(delta_t_vect, fit_function(delta_t_vect), linestyle='--', color='g')
 
 # Afficher l'équation de la régression en loi de puissance pour la norme L2
 equation_text = f'$L_2 = {np.exp(constant_logreg):.4f} \\times Δt^{{{exponent_logreg:.4f}}}$'
 equation_text_obj = plt.text(0.5, 0.15, equation_text, fontsize=12, transform=plt.gca().transAxes, color='k')
 
 # Graphique log-log norme de l'erreur Linf vs delta_t
-plt.loglog(delta_t_MNP, erreur_vect_L_inf_Centree, '.m', label = "Norme $L_\infty$")
+plt.loglog(delta_t_vect, erreur_vect_L_inf_Centree, '.m', label = "Norme $L_\infty$")
 
 # Ajuster une loi de puissance à toutes les valeurs (en utilisant np.polyfit avec logarithmes)
-coefficients = np.polyfit(np.log(delta_t_MNP), np.log(erreur_vect_L_inf_Centree), 1)
+coefficients = np.polyfit(np.log(delta_t_vect), np.log(erreur_vect_L_inf_Centree), 1)
 exponent_logreg = coefficients[0]
 constant_logreg = coefficients[1]
 
@@ -787,8 +374,8 @@ fit_function_log = lambda x: exponent_logreg * x + constant_logreg
 fit_function = lambda x: np.exp(fit_function_log(np.log(x)))
 
 # Extrapoler la valeur prédite pour la dernière valeur de h_values
-extrapolated_value = fit_function(delta_t_MNP[-1])
-plt.loglog(delta_t_MNP, fit_function(delta_t_MNP), linestyle='--', color='m')
+extrapolated_value = fit_function(delta_t_vect[-1])
+plt.loglog(delta_t_vect, fit_function(delta_t_vect), linestyle='--', color='m')
 
 # Afficher l'équation de la régression en loi de puissance pour la norme Linf
 equation_text = f'$L_\infty = {np.exp(constant_logreg):.4f} \\times Δt^{{{exponent_logreg:.4f}}}$'
@@ -798,6 +385,6 @@ plt.xlabel("$\Delta$t")
 plt.ylabel("Norme de l'erreur")
 plt.legend()
 plt.grid()
-plt.title("Normes des erreurs L1, L2 et $L_\infty$ avec schéma d'ordre 2 en \n fonction de $\Delta$t avec méthode MNP")
-plt.savefig("Norme_des_erreurs_Schema_2_MMS_Temp.png")
+plt.title("Normes des erreurs L1, L2 et $L_\infty$ avec schéma d'ordre 2 en \n fonction de $\Delta$t avec méthode MMS")
+plt.savefig("Norme_des_erreurs_Schema_2_MMS_Temp.png", dpi=700)
 plt.show()
