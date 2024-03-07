@@ -46,7 +46,7 @@ class Profil_Concentration:
         # Données :
         self.Ce = 12 # [mol/m3]
         # self.Deff = 10**-10 # [m2/s]
-        self.Deff = 1*10**-10        # [m2/s]
+        self.Deff = 1*10**-10  # [m2/s]
         self.S = 8*10**-9 # [mol/m3/s]
         self.k = 4*10**-9 # []
         

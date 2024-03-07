@@ -151,7 +151,7 @@ class Etude_convergence_Comsol():
             print(i)
             print("--------------------------------------------")
 
-            N = 10
+            N = 640
             Delta_r = self.R/(N-1)
             # Solution numerique :
             # Initialisation des objets
@@ -167,11 +167,11 @@ class Etude_convergence_Comsol():
             data = pd.read_csv('Comsol_results_%d_temps.txt'%(i+1),sep='\s+',header=None)
             data = pd.DataFrame(data)
 
-            C_exact = data.iloc[2:,:]
+            C_exact = data.iloc[0:,:]
             # C_exact = data[:]
             
             # Calcul norme de l'erreur :
-            Objet_Norme_Erreur = Norme_Erreur_Discretisation(C_exact, Objet_Concentration.C[2:,:])
+            Objet_Norme_Erreur = Norme_Erreur_Discretisation(C_exact, Objet_Concentration.C[0:,:])
             erreur_vect_L1[i], erreur_vect_L2[i], erreur_vect_L_inf[i] = Objet_Norme_Erreur.Calcul_Norme()
 
             del Objet_Concentration

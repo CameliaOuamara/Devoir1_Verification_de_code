@@ -31,61 +31,65 @@ N_vect = 5 * 2**N_vect
 delta_r_vect = R/(N_vect-1)
 
 # Pas de temps
-delta_t_vect = np.linspace(11,9, 3)
-delta_t_vect = 10**delta_t_vect
-
-# Imposition du temps final de la simulation
-t_final = 5*10**13
-
+delta_t_vect = np.array([8*10**9, 6*10**9, 4*10**9, 2*10**9])
 Classe = "Fick"
 
 # -----------------------------------------------------------------------------------------------------------------
 #                                         Schema 1 : Ordre 1 en temps et 1 en espace
 # -----------------------------------------------------------------------------------------------------------------
-schema = 1
+# schema = 1
 
-# Initialisation de l'objet
-Objet_Etude_Convergence = Etude_convergence_Comsol(delta_r_vect, delta_t_vect, N_vect, R, critere_convergence, critere_max_iter, schema, t_final, Classe)
+# # Initialisation de l'objet
+# Objet_Etude_Convergence = Etude_convergence_Comsol(delta_r_vect, delta_t_vect, N_vect, R, critere_convergence, critere_max_iter, schema, t_final, Classe)
 
-# -----------------------------------------------------------------------------------------------------------------
-#                                         Étude de convergence sur le pas d'espace
-# -----------------------------------------------------------------------------------------------------------------
+# # -----------------------------------------------------------------------------------------------------------------
+# #                                         Étude de convergence sur le pas d'espace
+# # -----------------------------------------------------------------------------------------------------------------
+# # # Calcul de l'erreur
+# # erreur_vect_L1, erreur_vect_L2, erreur_vect_L_inf = Objet_Etude_Convergence.Boucle_Iterations_Espace()
+
+# # # Regression en loi de puissance
+# # Objet_regression = Regression_Loi_Puissance(erreur_vect_L1, erreur_vect_L2, erreur_vect_L_inf, schema, delta_r_vect, delta_t_vect)
+# # Objet_regression.Plot_Regression_Espace()
+# # -----------------------------------------------------------------------------------------------------------------
+# #                                         Étude de convergence sur le pas de temps
+# # -----------------------------------------------------------------------------------------------------------------
 # # Calcul de l'erreur
-# erreur_vect_L1, erreur_vect_L2, erreur_vect_L_inf = Objet_Etude_Convergence.Boucle_Iterations_Espace()
+# erreur_vect_L1, erreur_vect_L2, erreur_vect_L_inf = Objet_Etude_Convergence.Boucle_Iterations_Temps()
 
-# # Regression en loi de puissance
+# #Regression en loi de puissance
 # Objet_regression = Regression_Loi_Puissance(erreur_vect_L1, erreur_vect_L2, erreur_vect_L_inf, schema, delta_r_vect, delta_t_vect)
-# Objet_regression.Plot_Regression_Espace()
-# -----------------------------------------------------------------------------------------------------------------
-#                                         Étude de convergence sur le pas de temps
-# -----------------------------------------------------------------------------------------------------------------
-# Calcul de l'erreur
-erreur_vect_L1, erreur_vect_L2, erreur_vect_L_inf = Objet_Etude_Convergence.Boucle_Iterations_Temps()
-
-#Regression en loi de puissance
-Objet_regression = Regression_Loi_Puissance(erreur_vect_L1, erreur_vect_L2, erreur_vect_L_inf, schema, delta_r_vect, delta_t_vect)
-Objet_regression.Plot_Regression_Temps()
+# Objet_regression.Plot_Regression_Temps()
 
 #%% -----------------------------------------------------------------------------------------------------------------
 #                                         Schema 2 : Ordre 1 en temps et 2 en espace
 # -----------------------------------------------------------------------------------------------------------------
 schema = 2
 
-# Initialisation de l'objet
-Objet_Etude_Convergence = Etude_convergence_Comsol(delta_r_vect, delta_t_vect, N_vect, R, critere_convergence, critere_max_iter, schema, t_final, Classe)
 
 # -----------------------------------------------------------------------------------------------------------------
 #                                         Étude de convergence sur le pas d'espace
 # -----------------------------------------------------------------------------------------------------------------
-# Calcul de l'erreur
-# erreur_vect_L1, erreur_vect_L2, erreur_vect_L_inf = Objet_Etude_Convergence.Boucle_Iterations_Espace()
+# Imposition du temps final de la simulation
+t_final = 5*10**13
 
-# # Regression en loi de puissance
-# Objet_regression = Regression_Loi_Puissance(erreur_vect_L1, erreur_vect_L2, erreur_vect_L_inf, schema, delta_r_vect, delta_t_vect)
-# Objet_regression.Plot_Regression_Espace()
+#Initialisation de l'objet
+Objet_Etude_Convergence = Etude_convergence_Comsol(delta_r_vect, delta_t_vect, N_vect, R, critere_convergence, critere_max_iter, schema, t_final, Classe)
+
+#Calcul de l'erreur
+erreur_vect_L1, erreur_vect_L2, erreur_vect_L_inf = Objet_Etude_Convergence.Boucle_Iterations_Espace()
+
+# Regression en loi de puissance
+Objet_regression = Regression_Loi_Puissance(erreur_vect_L1, erreur_vect_L2, erreur_vect_L_inf, schema, delta_r_vect, delta_t_vect)
+Objet_regression.Plot_Regression_Espace()
 # -----------------------------------------------------------------------------------------------------------------
 #                                         Étude de convergence sur le pas de temps
 # -----------------------------------------------------------------------------------------------------------------
+# Imposition du temps final de la simulation
+t_final = 10**13
+# Initialisation de l'objet
+Objet_Etude_Convergence = Etude_convergence_Comsol(delta_r_vect, delta_t_vect, N_vect, R, critere_convergence, critere_max_iter, schema, t_final, Classe)
+
 # Calcul de l'erreur
 erreur_vect_L1, erreur_vect_L2, erreur_vect_L_inf = Objet_Etude_Convergence.Boucle_Iterations_Temps()
 
