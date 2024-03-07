@@ -308,7 +308,7 @@ class Profil_Concentration_Centree_MNP(Profil_Concentration_Centree):
         
         self.B = sp.sparse.lil_matrix((self.N, 1))
         
-        self.B[0,0]  = dc_dt(self.t,self.r[0])[0][0]
+        self.B[0,0]  = dc_dr(self.t,self.r[0])[0][0]
         self.B[-1,0] = c(self.t,self.r[-1])[0][0]
         
         for i in range(1,self.N-1):

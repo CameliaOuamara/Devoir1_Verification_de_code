@@ -31,7 +31,13 @@ class Plot_Concentration():
         
         # for i in range(len(self.C)):
         #     plt.scatter(self.r, self.C[i, :], label='i=%d'%i)
-        plt.plot(self.r, self.C[-1, :], '.r', label = 'Solution numérique')        
+        plt.plot(self.r, self.C[-1, :], '.r', label = 'Solution numérique')
+
+    def Plot_Numerique_decal(self,iter_val):
+        
+        # for i in range(len(self.C)):
+        #     plt.scatter(self.r, self.C[i, :], label='i=%d'%i)
+        plt.plot(self.r, self.C[iter_val, :], '.r', label = 'Solution numérique')        
         
     def Plot_MNP(self):
         

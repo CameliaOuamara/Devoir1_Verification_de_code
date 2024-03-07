@@ -59,9 +59,9 @@ critere_convergence = 1.0e-14                        # Critere sur la valeur de 
 critere_max_iter = 400                              # Nombre minimum d'iterations a realiser pour la convergence vers le regime permanent
 
 ##Input conditions for convergence study HW2:
-convergence_dimension = "space" # switch to "time" for time, "space" for space
+convergence_dimension = "time" # switch to "time" for time, "space" for space
 manufactured_sol_type = "MNP" # switch to "MNP" for near problem, "MMS" for manufactured solution
-
+schema_check = "centered" # switch to "centered" for formulation of HW1QF, "notcentered" for HW1QA
 
 
 # Étude convergence MNP
@@ -211,6 +211,8 @@ plt.show()
 if convergence_dimension == "space" and manufactured_sol_type == "MNP":
     decalage_ignore = 20000
     decalage_fine_mesh = -4
+    # decalage_ignore = 500
+    # decalage_fine_mesh = -4
 ## input MNP delta_t_convergence
 if convergence_dimension == "time" and manufactured_sol_type == "MNP":
     decalage_ignore = 0
@@ -247,7 +249,10 @@ print(time_post_MNP_spline-time_start)
 # erreur_vect_L_inf_Centree = np.zeros(len(N_vect))
 
 plt.figure(2)
-Objet_Etude_Convergence = Etude_Convergence(delta_r_vect, delta_t_vect, N_vect, R, critere_convergence, critere_max_iter, 2, sol_MNP_Centree.C, spline_bicubic_Centree, nombre_nodes_vect)
+if schema_check == "centered":
+    Objet_Etude_Convergence = Etude_Convergence(delta_r_vect, delta_t_vect, N_vect, R, critere_convergence, critere_max_iter, 2, sol_MNP_Centree.C, spline_bicubic_Centree, nombre_nodes_vect)
+if schema_check == "notcentered":
+    Objet_Etude_Convergence = Etude_Convergence(delta_r_vect, delta_t_vect, N_vect, R, critere_convergence, critere_max_iter, 1, sol_MNP_Centree.C, spline_bicubic_Centree, nombre_nodes_vect)
 time_post_crea_etude_convergence = time.time()
 print("Time after convergence etude cration:")
 print(time_post_crea_etude_convergence-time_start)
@@ -341,18 +346,25 @@ if convergence_dimension == "time":
     equation_text = f'$Linf = {np.exp(constant_logreg):.4E} \\times Δt^{{{exponent_logreg:.4f}}}$'
     equation_text_obj = plt.text(0.05, 0.25, equation_text, fontsize=12, transform=plt.gca().transAxes, color='k')
 
-plt.xlabel("delta_r")
+if convergence_dimension == "time":
+    plt.xlabel("delta_t")
+if convergence_dimension == "space":
+    plt.xlabel("delta_r")
 plt.ylabel("erreur")
 plt.legend()
 plt.grid()
 plt.title("Normes des erreurs L1, L2 et $L_\infty$ schéma d'ordre 2 en fonction de N")
 if convergence_dimension == "time" and manufactured_sol_type == "MNP":
+    plt.title("Normes des erreurs L1, L2 et $L_\infty$ schéma d'ordre 2 en fonction de Δt pour MNP")
     plt.savefig(outputFolder+"Norme_des_erreurs_Schema_2_MNP_time.png")
 if convergence_dimension == "space" and manufactured_sol_type == "MNP":
+    plt.title("Normes des erreurs L1, L2 et $L_\infty$ schéma d'ordre 2 en fonction de Δr pour MNP")
     plt.savefig(outputFolder+"Norme_des_erreurs_Schema_2_MNP_space.png")
 if convergence_dimension == "time" and manufactured_sol_type == "MMS":
+    plt.title("Normes des erreurs L1, L2 et $L_\infty$ schéma d'ordre 2 en fonction de Δt pour MMS")
     plt.savefig(outputFolder+"Norme_des_erreurs_Schema_2_MMS_time.png")
 if convergence_dimension == "space" and manufactured_sol_type == "MMS":
+    plt.title("Normes des erreurs L1, L2 et $L_\infty$ schéma d'ordre 2 en fonction de Δr pour MMS")
     plt.savefig(outputFolder+"Norme_des_erreurs_Schema_2_MMS_space.png")
 plt.show()
 

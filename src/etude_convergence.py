@@ -52,6 +52,7 @@ class Etude_Convergence():
             # Objet_Graphique.Plot_Exact()
             #Objet_Graphique.Plot_MNP()
             Objet_Graphique.Plot_spline_MNP()
+            Objet_Graphique.Plot_Numerique_decal(0)
 
             #Objet_Graphique.Save_plot("schema1_"+str(N_vect[i]), "Comparaison de résultat premier schéma, "+str(N_vect[i])+" noeuds")
             Objet_Graphique.Save_plot(outputFolder+"schema_%d_%d"%(self.schema,self.N_vect[i]), "Comparaison de résultat schéma %d ,%d noeuds"%(self.schema, self.N_vect[i]))
