@@ -17,11 +17,11 @@
 
 
 %% definition of convergence study arrays
-nx_array = [50,100,200,400]; % number of points
+nx_array = [100,150,200,250,300,350]; % number of points
 dx_array = 2.0e-4./nx_array; % grid size in m
 
 %% other inputs
-seed=101;
+seed=54321;
 deltaP= 0.1 ; % pressure drop in Pa
 poro= 0.9 ;
 mean_fiber_d= 12.5 ; % in microns
