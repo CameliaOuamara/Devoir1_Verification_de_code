@@ -54,7 +54,7 @@ k_in_micron2=mean(ux(1:NX))*mu/deltaP*(NX*dx)*1e12 %in micron^2
 out = [poro_eff, Re, k_in_micron2];
 
 % Vector plot of the flow field 
-%ux(SOLID)=0; uy(SOLID)=0;ux=reshape(ux,NX,NY)';uy=reshape(uy,NX,NY)';
-%figure(2);clf;hold on;colormap(gray(2));image(2-reshape(SOLID,NX,NY)');
-%quiver(1:NX,1:NY,ux,uy,1.5,'b');axis([0.5 NX+0.5 0.5 NY+0.5]);axis image;
-%title(['Velocity field after ',num2str(t_),' time steps']);
+ux(SOLID)=0; uy(SOLID)=0;ux=reshape(ux,NX,NY)';uy=reshape(uy,NX,NY)';
+figure(2);clf;hold on;colormap(gray(2));image(2-reshape(SOLID,NX,NY)');
+quiver(1:NX,1:NY,ux,uy,1.5,'b');axis([0.5 NX+0.5 0.5 NY+0.5]);axis image;
+title(['Velocity field after ',num2str(t_),' time steps']);

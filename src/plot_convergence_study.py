@@ -61,10 +61,10 @@ for i in range(0,len(erreur_vect_L1)):
 print(erreur_vect_L1)
 
 plt.figure(1)
-plt.loglog(array_x_conv[:-2], erreur_vect_L1[:-2], '.r', label = "Norme L1")
+plt.loglog(array_x_conv[:-1], erreur_vect_L1[:-1], '.r', label = "abs(Δk)")
 
 # Ajuster une loi de puissance à toutes les valeurs (en utilisant np.polyfit avec logarithmes)
-coefficients = np.polyfit(np.log(array_x_conv[0:-2]), np.log(erreur_vect_L1[0:-2]), 1)
+coefficients = np.polyfit(np.log(array_x_conv[0:-1]), np.log(erreur_vect_L1[0:-1]), 1)
 exponent_logreg = coefficients[0]
 constant_logreg = coefficients[1]
 
@@ -79,14 +79,14 @@ extrapolated_value = fit_function(array_x_conv[-1])
 plt.loglog(array_x_conv, fit_function(array_x_conv), linestyle='--', color='r')
 
 # Afficher l'équation de la régression en loi de puissance pour la norme L1
-equation_text = f'$L_1 = {np.exp(constant_logreg):.4E} \\times Δr^{{{exponent_logreg:.4f}}}$'
+equation_text = f'$Δk = {np.exp(constant_logreg):.4E} \\times Δx^{{{exponent_logreg:.4f}}}$'
 equation_text_obj = plt.text(0.05, 0.05, equation_text, fontsize=12, transform=plt.gca().transAxes, color='k')
 
 plt.xlabel("delta_x")
 plt.ylabel("erreur")
 plt.legend()
 plt.grid()
-plt.title("Normes de l'écart avec maillage le plus fin en fonction de Δx")
+plt.title("Normes de l'écart de la valeur de perméabilité avec maillage le plus fin en fonction de Δx")
 plt.savefig(outputFolder+"etude_convergence_L1.png")
 
 plt.show()

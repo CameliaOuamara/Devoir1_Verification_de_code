@@ -17,7 +17,7 @@
 
 
 %% definition of convergence study arrays
-nx_array = [100,150,200,250,300,350]; % number of points
+nx_array = [50,100,200,400]; % number of points
 dx_array = 2.0e-4./nx_array; % grid size in m
 
 %% other inputs
@@ -41,10 +41,11 @@ for i_convstud = 1:length(nx_array)
     disp(i_convstud)
     NX = nx_array(i_convstud);
     dx = dx_array(i_convstud);
-    [d_equivalent]=Generate_sample(seed,filename,mean_fiber_d,std_d,poro,NX,dx);
+    filename_temp = strcat('fiber_mat',int2str(i_convstud),'.tiff')
+    [d_equivalent]=Generate_sample(seed,filename_temp,mean_fiber_d,std_d,poro,NX,dx);
 
     % calculation of the flow field and the permeability from Darcy Law
-    outtemp = LBM(filename,NX,deltaP,dx,d_equivalent);
+    outtemp = LBM(filename_temp,NX,deltaP,dx,d_equivalent);
     poro_out_array(i_convstud) = outtemp(1);
     Re_out_array(i_convstud) = outtemp(2);
     k_out_array(i_convstud) = outtemp(3);

@@ -117,9 +117,31 @@ end
 
 function [nb_fiber,dist_d,poro_eff,d_equivalent]=distribution_of_fiber(mean_d,std_d,poro,nx,dx)
 
-dist=normrnd(mean_d,std_d,[1,10000]);
+dist=normrnd(mean_d,std_d,[1,1000000]);
 nb_fiber=1;
 poro_eff=1-sum(dist(1:nb_fiber).^2/4*pi)/(nx*dx)^2;
+
+% while poro_eff >= poro
+%     poro_eff_old=poro_eff;
+%     nb_fiber=nb_fiber+10000;
+%     poro_eff=1-sum(dist(1:nb_fiber).^2/4*pi)/(nx*dx)^2;
+% end
+
+% disp('finished first loop for generating distribution')
+
+% nb_fiber=nb_fiber-10000;
+% poro_eff=1-sum(dist(1:nb_fiber).^2/4*pi)/(nx*dx)^2;
+
+% while poro_eff >= poro
+%     poro_eff_old=poro_eff;
+%     nb_fiber=nb_fiber+100;
+%     poro_eff=1-sum(dist(1:nb_fiber).^2/4*pi)/(nx*dx)^2;
+% end
+
+% disp('finished second loop for generating distribution')
+
+% nb_fiber=nb_fiber-100;
+% poro_eff=1-sum(dist(1:nb_fiber).^2/4*pi)/(nx*dx)^2;
 
 while poro_eff >= poro
     poro_eff_old=poro_eff;
